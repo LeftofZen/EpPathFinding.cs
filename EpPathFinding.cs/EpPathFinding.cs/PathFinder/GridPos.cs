@@ -58,6 +58,7 @@ namespace EpPathFinding.cs
 			X = x;
 			Y = y;
 		}
+
 		public GridPos SetAndReturn(int x, int y)
 		{
 			X = x;
@@ -65,8 +66,8 @@ namespace EpPathFinding.cs
 			return this;
 		}
 
-		public GridPos Translate(int x, int Y)
-			=> new GridPos(X + x, Y + Y);
+		public GridPos Translate(int x, int y)
+			=> new GridPos(X + x, Y + y);
 
 		public override int GetHashCode()
 			=> X ^ Y;

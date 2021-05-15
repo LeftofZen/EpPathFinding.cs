@@ -41,10 +41,12 @@ namespace EpPathFinding.cs
 	public static class Util
 	{
 		public static DiagonalMovement GetDiagonalMovement(bool crossCorners, bool crossAdjacentPoint)
-			=> crossCorners && crossAdjacentPoint
-				? DiagonalMovement.Always
-				: crossCorners
-					? DiagonalMovement.IfAtLeastOneWalkable
-					: DiagonalMovement.OnlyWhenNoObstacles;
+			=> crossCorners
+				? crossAdjacentPoint
+					? DiagonalMovement.Always
+					: DiagonalMovement.IfAtLeastOneWalkable
+				: crossAdjacentPoint
+					? DiagonalMovement.OnlyWhenNoObstacles
+					: DiagonalMovement.Never;
 	}
 }

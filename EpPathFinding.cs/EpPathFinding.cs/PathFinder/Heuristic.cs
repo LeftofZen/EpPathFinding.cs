@@ -50,7 +50,7 @@ namespace EpPathFinding.cs
 	public static class Heuristic
 	{
 		public static float Manhattan(int dx, int dy)
-			=> (float)dx + dy;
+			=> (float)Math.Abs(dx) + Math.Abs(dy);
 
 		public static float Euclidean(int dx, int dy)
 			=> (float)Math.Sqrt((dx * dx) + (dy * dy));
@@ -59,6 +59,6 @@ namespace EpPathFinding.cs
 			=> (dx * dx) + (dy * dy);
 
 		public static float Chebyshev(int dx, int dy)
-			=> Math.Max(dx, dy);
+			=> Math.Max(Math.Abs(dx), Math.Abs(dy));
 	}
 }
