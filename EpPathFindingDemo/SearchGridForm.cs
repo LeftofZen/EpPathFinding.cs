@@ -1,4 +1,4 @@
-﻿/*! 
+﻿/*!
 @file SearchGridForm.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding>
@@ -37,376 +37,338 @@ An Interface for the SearchGridForm Class.
 */
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using EpPathFinding.cs;
 
 namespace EpPathFindingDemo
 {
-    public partial class SearchGridForm : Form
-    {
-        const int width = 64;
-        const int height = 32;
-        Graphics paper;
+	public partial class SearchGridForm : Form
+	{
+		private const int width = 64;
+		private const int height = 32;
+		private Graphics paper;
 
-        GridBox[][] m_rectangles;
-        List<ResultBox> m_resultBox;
-        List<GridLine> m_resultLine;
+		private readonly GridBox[][] rectangles;
+		private readonly List<ResultBox> resultBox;
+		private readonly List<GridLine> resultLine;
 
-        GridBox m_lastBoxSelect;
-        BoxType m_lastBoxType;
+		private GridBox lastBoxSelect;
+		private BoxType lastBoxType;
 
-        BaseGrid searchGrid;
-        JumpPointParam jumpParam;
-        public SearchGridForm()
-        {
+		private readonly BaseGrid searchGrid;
+		private readonly JumpPointParam jumpParam;
+		public SearchGridForm()
+		{
+			InitializeComponent();
+			DoubleBuffered = true;
 
+			resultBox = new List<ResultBox>();
+			Width = (width + 1) * 20;
+			Height = ((height + 1) * 20) + 100;
+			MaximumSize = new Size(Width, Height);
+			MaximizeBox = false;
 
+			rectangles = new GridBox[width][];
+			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			{
+				rectangles[widthTrav] = new GridBox[height];
+				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				{
+					rectangles[widthTrav][heightTrav] = widthTrav == (width / 3) && heightTrav == (height / 2)
+						? new GridBox(widthTrav * 20, (heightTrav * 20) + 50, BoxType.Start)
+						: widthTrav == 41 && heightTrav == (height / 2)
+							? new GridBox(widthTrav * 20, (heightTrav * 20) + 50, BoxType.End)
+							: new GridBox(widthTrav * 20, (heightTrav * 20) + 50, BoxType.Normal);
+				}
+			}
+			_ = cbbJumpType.Items.Add("Always");
+			_ = cbbJumpType.Items.Add("Never");
+			_ = cbbJumpType.Items.Add("IfAtLeastOneWalkable");
+			_ = cbbJumpType.Items.Add("OnlyWhenNoObstacles");
+			cbbJumpType.SelectedIndex = 0;
 
-            InitializeComponent();
-            this.DoubleBuffered = true;
+			resultLine = new List<GridLine>();
 
-            m_resultBox = new List<ResultBox>();
-            this.Width = (width+1) * 20;
-            this.Height = (height+1) * 20 +100;
-            this.MaximumSize = new Size(this.Width, this.Height);
-            this.MaximizeBox = false;
+			searchGrid = new StaticGrid(width, height);
+			// searchGrid = new DynamicGrid();
+			//searchGrid = new DynamicGridWPool(SingletonHolder<NodePool>.Instance);
 
+			jumpParam = new JumpPointParam(searchGrid, EndNodeUnWalkableTreatment.Allow, (DiagonalMovement)cbbJumpType.SelectedIndex, HeuristicMode.Euclidean)
+			{
+				CurIterationType = cbUseRecursive.Checked ? IterationType.Recursive : IterationType.Loop
+			};//new JumpPointParam(searchGrid, startPos, endPos, cbCrossCorners.Checked, HeuristicMode.EUCLIDEANSQR);
+		}
 
-            m_rectangles = new GridBox[width][];
-            for (int widthTrav = 0; widthTrav < width; widthTrav++)
-            {
-                m_rectangles[widthTrav] = new GridBox[height];
-                for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                {
-                    if(widthTrav==(width/3) && heightTrav==(height/2))
-                        m_rectangles[widthTrav][heightTrav] = new GridBox(widthTrav * 20, heightTrav * 20 + 50, BoxType.Start);
-                    else if (widthTrav == 41 && heightTrav == (height / 2))
-                        m_rectangles[widthTrav][heightTrav] = new GridBox(widthTrav * 20 , heightTrav * 20 + 50, BoxType.End);
-                    else
-                        m_rectangles[widthTrav][heightTrav] = new GridBox(widthTrav * 20, heightTrav * 20 + 50, BoxType.Normal);
+		private void Form1_Paint(object sender, PaintEventArgs e)
+		{
+			paper = e.Graphics;
+			//Draw
 
+			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				{
+					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Normal);
+				}
+			}
 
-                }
-            }
-            cbbJumpType.Items.Add("Always");
-            cbbJumpType.Items.Add("Never");
-            cbbJumpType.Items.Add("IfAtLeastOneWalkable");
-            cbbJumpType.Items.Add("OnlyWhenNoObstacles");
-            cbbJumpType.SelectedIndex = 0;
+			for (var resultTrav = 0; resultTrav < resultBox.Count; resultTrav++)
+			{
+				resultBox[resultTrav].DrawBox(paper);
+			}
 
-            m_resultLine = new List<GridLine>();
+			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				{
+					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Start);
+					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.End);
+					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Wall);
+				}
+			}
 
-             searchGrid = new StaticGrid(width, height);
-            // searchGrid = new DynamicGrid();
-            //searchGrid = new DynamicGridWPool(SingletonHolder<NodePool>.Instance);
+			for (var resultTrav = 0; resultTrav < resultLine.Count; resultTrav++)
+			{
+				resultLine[resultTrav].DrawLine(paper);
+			}
+		}
 
-            jumpParam = new JumpPointParam(searchGrid, EndNodeUnWalkableTreatment.ALLOW,(DiagonalMovement)cbbJumpType.SelectedIndex, HeuristicMode.EUCLIDEAN);//new JumpPointParam(searchGrid, startPos, endPos, cbCrossCorners.Checked, HeuristicMode.EUCLIDEANSQR);
-            jumpParam.CurIterationType = cbUseRecursive.Checked ? IterationType.RECURSIVE : IterationType.LOOP;
-        }
+		private void Form1_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				lastBoxSelect = null;
+			}
+		}
 
+		private void Form1_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				if (lastBoxSelect == null)
+				{
+					for (var widthTrav = 0; widthTrav < width; widthTrav++)
+					{
+						for (var heightTrav = 0; heightTrav < height; heightTrav++)
+						{
+							if (rectangles[widthTrav][heightTrav].BoxRect.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
+							{
+								lastBoxType = rectangles[widthTrav][heightTrav].BoxType;
+								lastBoxSelect = rectangles[widthTrav][heightTrav];
+								switch (lastBoxType)
+								{
+									case BoxType.Normal:
+									case BoxType.Wall:
+										rectangles[widthTrav][heightTrav].SwitchBox();
+										Invalidate();
+										break;
+									case BoxType.Start:
+									case BoxType.End:
 
+										break;
+								}
+							}
+						}
+					}
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-            
-            paper = e.Graphics;
-            //Draw
-            
-            for (int widthTrav = 0; widthTrav < width; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                {
-                    m_rectangles[widthTrav][heightTrav].DrawBox(paper,BoxType.Normal);
-                }
-            }
-            
+					return;
+				}
+				else
+				{
+					for (var widthTrav = 0; widthTrav < width; widthTrav++)
+					{
+						for (var heightTrav = 0; heightTrav < height; heightTrav++)
+						{
+							if (rectangles[widthTrav][heightTrav].BoxRect.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
+							{
+								if (rectangles[widthTrav][heightTrav] == lastBoxSelect)
+								{
+									return;
+								}
+								else
+								{
+									switch (lastBoxType)
+									{
+										case BoxType.Normal:
+										case BoxType.Wall:
+											if (rectangles[widthTrav][heightTrav].BoxType == lastBoxType)
+											{
+												rectangles[widthTrav][heightTrav].SwitchBox();
+												lastBoxSelect = rectangles[widthTrav][heightTrav];
+												Invalidate();
+											}
+											break;
+										case BoxType.Start:
+											lastBoxSelect.SetNormalBox();
+											lastBoxSelect = rectangles[widthTrav][heightTrav];
+											lastBoxSelect.SetStartBox();
+											Invalidate();
+											break;
+										case BoxType.End:
+											lastBoxSelect.SetNormalBox();
+											lastBoxSelect = rectangles[widthTrav][heightTrav];
+											lastBoxSelect.SetEndBox();
+											Invalidate();
+											break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
-            
-            for (int resultTrav = 0; resultTrav < m_resultBox.Count; resultTrav++)
-            {
-                m_resultBox[resultTrav].drawBox(paper);
-            }
-            
+		private void Form1_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				for (var widthTrav = 0; widthTrav < width; widthTrav++)
+				{
+					for (var heightTrav = 0; heightTrav < height; heightTrav++)
+					{
+						if (rectangles[widthTrav][heightTrav].BoxRect.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
+						{
+							lastBoxType = rectangles[widthTrav][heightTrav].BoxType;
+							lastBoxSelect = rectangles[widthTrav][heightTrav];
+							switch (lastBoxType)
+							{
+								case BoxType.Normal:
+								case BoxType.Wall:
+									rectangles[widthTrav][heightTrav].SwitchBox();
+									Invalidate();
+									break;
+								case BoxType.Start:
+								case BoxType.End:
 
-            
-            for (int widthTrav = 0; widthTrav < width; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                {
-                    m_rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Start);
-                    m_rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.End);
-                    m_rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Wall);
-                }
-            }
-             
-            for (int resultTrav = 0; resultTrav < m_resultLine.Count; resultTrav++)
-            {
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
 
-                m_resultLine[resultTrav].drawLine(paper);
-            }
-        }
+		private void btnSearch_Click(object sender, EventArgs e)
+		{
+			for (var resultTrav = 0; resultTrav < resultLine.Count; resultTrav++)
+			{
+				resultLine[resultTrav].Dispose();
+			}
+			resultLine.Clear();
+			for (var resultTrav = 0; resultTrav < resultBox.Count; resultTrav++)
+			{
+				resultBox[resultTrav].Dispose();
+			}
+			resultBox.Clear();
 
-        private void Form1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                m_lastBoxSelect = null;
-            }
-        }
+			var startPos = new GridPos();
+			var endPos = new GridPos();
+			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				{
+					_ = rectangles[widthTrav][heightTrav].BoxType != BoxType.Wall
+						? searchGrid.SetWalkableAt(new GridPos(widthTrav, heightTrav), true)
+						: searchGrid.SetWalkableAt(new GridPos(widthTrav, heightTrav), false);
 
-        private void Form1_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                if (m_lastBoxSelect == null)
-                {
-                    for (int widthTrav = 0; widthTrav < width; widthTrav++)
-                    {
-                        for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                        {
-                            if (m_rectangles[widthTrav][heightTrav].boxRec.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
-                            {
-                                m_lastBoxType = m_rectangles[widthTrav][heightTrav].boxType;
-                                m_lastBoxSelect = m_rectangles[widthTrav][heightTrav];
-                                switch (m_lastBoxType)
-                                {
-                                    case BoxType.Normal:
-                                    case BoxType.Wall:
-                                        m_rectangles[widthTrav][heightTrav].SwitchBox();
-                                        this.Invalidate();
-                                        break;
-                                    case BoxType.Start:
-                                    case BoxType.End:
+					if (rectangles[widthTrav][heightTrav].BoxType == BoxType.Start)
+					{
+						startPos.X = widthTrav;
+						startPos.Y = heightTrav;
+					}
 
-                                        break;
-                                }
-                            }
+					if (rectangles[widthTrav][heightTrav].BoxType == BoxType.End)
+					{
+						endPos.X = widthTrav;
+						endPos.Y = heightTrav;
+					}
+				}
+			}
 
+			jumpParam.DiagonalMovement = (DiagonalMovement)cbbJumpType.SelectedIndex;
+			jumpParam.CurIterationType = cbUseRecursive.Checked ? IterationType.Recursive : IterationType.Loop;
+			jumpParam.Reset(startPos, endPos);
+			var resultList = JumpPointFinder.FindPath(jumpParam);
 
-                        }
-                    }
-                    
-                    return;
-                }
-                else
-                {
-                    for (int widthTrav = 0; widthTrav < width; widthTrav++)
-                    {
-                        for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                        {
-                            if (m_rectangles[widthTrav][heightTrav].boxRec.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
-                            {
-                                if (m_rectangles[widthTrav][heightTrav] == m_lastBoxSelect)
-                                {
-                                    return;
-                                }
-                                else
-                                {
+			for (var resultTrav = 0; resultTrav < resultList.Count - 1; resultTrav++)
+			{
+				resultLine.Add(new GridLine(rectangles[resultList[resultTrav].X][resultList[resultTrav].Y], rectangles[resultList[resultTrav + 1].X][resultList[resultTrav + 1].Y]));
+			}
 
-                                    switch (m_lastBoxType)
-                                    {
-                                        case BoxType.Normal:
-                                        case BoxType.Wall:
-                                            if (m_rectangles[widthTrav][heightTrav].boxType == m_lastBoxType)
-                                            {
-                                                m_rectangles[widthTrav][heightTrav].SwitchBox();
-                                                m_lastBoxSelect = m_rectangles[widthTrav][heightTrav];
-                                                this.Invalidate();
-                                            }
-                                            break;
-                                        case BoxType.Start:
-                                            m_lastBoxSelect.SetNormalBox();
-                                            m_lastBoxSelect = m_rectangles[widthTrav][heightTrav];
-                                            m_lastBoxSelect.SetStartBox();
-                                            this.Invalidate();
-                                            break;
-                                        case BoxType.End:
-                                            m_lastBoxSelect.SetNormalBox();
-                                            m_lastBoxSelect = m_rectangles[widthTrav][heightTrav];
-                                            m_lastBoxSelect.SetEndBox();
-                                            this.Invalidate();
-                                            break;
-                                    }
-                                    
+			for (var widthTrav = 0; widthTrav < jumpParam.SearchGrid.Width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < jumpParam.SearchGrid.Height; heightTrav++)
+				{
+					if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav) == null)
+					{
+						continue;
+					}
 
-                                }
-                            }
+					if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav).IsOpened)
+					{
+						var resultBox = new ResultBox(widthTrav * 20, (heightTrav * 20) + 50, ResultBoxType.Opened);
+						this.resultBox.Add(resultBox);
+					}
+					if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav).IsClosed)
+					{
+						var resultBox = new ResultBox(widthTrav * 20, (heightTrav * 20) + 50, ResultBoxType.Closed);
+						this.resultBox.Add(resultBox);
+					}
+				}
+			}
+			Invalidate();
+		}
 
+		private void btnClearPath_Click(object sender, EventArgs e)
+		{
+			for (var resultTrav = 0; resultTrav < resultLine.Count; resultTrav++)
+			{
+				resultLine[resultTrav].Dispose();
+			}
+			resultLine.Clear();
 
-                        }
-                    }
-                }
-              
-            }
-            
-        }
+			for (var resultTrav = 0; resultTrav < resultBox.Count; resultTrav++)
+			{
+				resultBox[resultTrav].Dispose();
+			}
 
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                for (int widthTrav = 0; widthTrav < width; widthTrav++)
-                {
-                    for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                    {
-                        if (m_rectangles[widthTrav][heightTrav].boxRec.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
-                        {
-                            m_lastBoxType=m_rectangles[widthTrav][heightTrav].boxType;
-                            m_lastBoxSelect = m_rectangles[widthTrav][heightTrav];
-                            switch(m_lastBoxType)
-                            {
-                                case BoxType.Normal:
-                                case BoxType.Wall:
-                                m_rectangles[widthTrav][heightTrav].SwitchBox();
-                                this.Invalidate();
-                                break;
-                                case BoxType.Start:
-                                case BoxType.End:
-                                   
-                                break;
-                            }
-                        }
+			resultBox.Clear();
+			Invalidate();
+		}
 
+		private void btnClearWall_Click(object sender, EventArgs e)
+		{
+			for (var resultTrav = 0; resultTrav < resultLine.Count; resultTrav++)
+			{
+				resultLine[resultTrav].Dispose();
+			}
+			resultLine.Clear();
 
-                    }
-                }
-                
-            }
-        }
+			for (var resultTrav = 0; resultTrav < resultBox.Count; resultTrav++)
+			{
+				resultBox[resultTrav].Dispose();
+			}
 
-        private void btnSearch_Click(object sender, EventArgs e)
-        {
-            for (int resultTrav = 0; resultTrav < m_resultLine.Count; resultTrav++)
-            {
-
-                m_resultLine[resultTrav].Dispose();
-            }
-            m_resultLine.Clear();
-            for (int resultTrav = 0; resultTrav < m_resultBox.Count; resultTrav++)
-            {
-
-                m_resultBox[resultTrav].Dispose();
-            }
-            m_resultBox.Clear();
-
-            GridPos startPos = new GridPos();
-            GridPos endPos = new GridPos();
-            for (int widthTrav = 0; widthTrav < width; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                {
-                    if (m_rectangles[widthTrav][heightTrav].boxType != BoxType.Wall)
-                    {
-                        searchGrid.SetWalkableAt(new GridPos(widthTrav, heightTrav), true);
-                    }
-                    else
-                    {
-                        searchGrid.SetWalkableAt(new GridPos(widthTrav, heightTrav), false);
-                    }
-                    if(m_rectangles[widthTrav][heightTrav].boxType==BoxType.Start)
-                    {
-                        startPos.x=widthTrav;
-                        startPos.y=heightTrav;
-                    }
-                    if(m_rectangles[widthTrav][heightTrav].boxType==BoxType.End)
-                    {
-                        endPos.x=widthTrav;
-                        endPos.y=heightTrav;
-                    }
-
-                }
-            }
-            jumpParam.DiagonalMovement = (DiagonalMovement)cbbJumpType.SelectedIndex;
-            jumpParam.CurIterationType = cbUseRecursive.Checked ? IterationType.RECURSIVE : IterationType.LOOP;
-            jumpParam.Reset(startPos, endPos);
-            List<GridPos> resultList = JumpPointFinder.FindPath(jumpParam);
-            
-            for (int resultTrav = 0; resultTrav < resultList.Count-1; resultTrav++)
-            {
-                m_resultLine.Add(new GridLine(m_rectangles[resultList[resultTrav].x][resultList[resultTrav].y],m_rectangles[resultList[resultTrav+1].x][resultList[resultTrav+1].y]));
-            }
-            for (int widthTrav = 0; widthTrav < jumpParam.SearchGrid.width; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < jumpParam.SearchGrid.height; heightTrav++)
-                {
-                    if(jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav)==null)
-                        continue;
-                    if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav).isOpened)
-                    {
-                        ResultBox resultBox = new ResultBox(widthTrav * 20, heightTrav * 20 + 50, ResultBoxType.Opened);
-                        m_resultBox.Add(resultBox);
-                    }
-                    if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav).isClosed)
-                    {
-                        ResultBox resultBox = new ResultBox(widthTrav * 20, heightTrav * 20 + 50, ResultBoxType.Closed);
-                        m_resultBox.Add(resultBox);
-                    }
-                }
-            }
-            this.Invalidate();
-        }
-
-        private void btnClearPath_Click(object sender, EventArgs e)
-        {
-            for (int resultTrav = 0; resultTrav < m_resultLine.Count; resultTrav++)
-            {
-
-                m_resultLine[resultTrav].Dispose();
-            }
-            m_resultLine.Clear();
-
-            for (int resultTrav = 0; resultTrav < m_resultBox.Count; resultTrav++)
-            {
-                m_resultBox[resultTrav].Dispose();
-            }
-
-            m_resultBox.Clear();
-            this.Invalidate();
-        }
-
-        private void btnClearWall_Click(object sender, EventArgs e)
-        {
-            for (int resultTrav = 0; resultTrav < m_resultLine.Count; resultTrav++)
-            {
-
-                m_resultLine[resultTrav].Dispose();
-            }
-            m_resultLine.Clear();
-
-            for (int resultTrav = 0; resultTrav < m_resultBox.Count; resultTrav++)
-            {
-                m_resultBox[resultTrav].Dispose();
-            }
-
-            m_resultBox.Clear();
-            for (int widthTrav = 0; widthTrav < width; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                {
-                   
-                    switch (m_rectangles[widthTrav][heightTrav].boxType)
-                    {
-                        case BoxType.Normal:
-                        case BoxType.Start:
-                        case BoxType.End:
-                            break;
-                        case BoxType.Wall:
-                            m_rectangles[widthTrav][heightTrav].SetNormalBox();
-                            break;
-                    }
-                   
-
-
-                }
-            }
-            this.Invalidate();
-        }
-
-    }
+			resultBox.Clear();
+			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				{
+					switch (rectangles[widthTrav][heightTrav].BoxType)
+					{
+						case BoxType.Normal:
+						case BoxType.Start:
+						case BoxType.End:
+							break;
+						case BoxType.Wall:
+							rectangles[widthTrav][heightTrav].SetNormalBox();
+							break;
+					}
+				}
+			}
+			Invalidate();
+		}
+	}
 }

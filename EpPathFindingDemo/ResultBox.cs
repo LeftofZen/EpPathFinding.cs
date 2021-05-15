@@ -1,4 +1,4 @@
-﻿/*! 
+﻿/*!
 @file ResultBox.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -35,57 +35,47 @@ THE SOFTWARE.
 An Interface for the ResultBox Class.
 
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 
 namespace EpPathFinding.cs
 {
-    enum ResultBoxType { Opened,Closed };
-    class ResultBox
-    {
-        public int x, y, width, height;
-        public SolidBrush brush;
-        public Rectangle boxRec;
-        public ResultBoxType boxType;
-        public ResultBox(int iX, int iY, ResultBoxType iType)
-        {
-            this.x = iX;
-            this.y = iY;
-            this.boxType = iType;
-            switch (iType)
-            {
-                case ResultBoxType.Opened:
-                    brush = new SolidBrush(Color.AliceBlue);
-                    break;
-                case ResultBoxType.Closed:
-                    brush = new SolidBrush(Color.LightGreen);
-                    break;
-              
-            
-            }
-            width = 18;
-            height = 18;
-            boxRec = new Rectangle(x, y, width, height);
-        }
+	internal enum ResultBoxType { Opened, Closed };
+	internal class ResultBox
+	{
+		public int X, Y, Width, Height;
+		public SolidBrush Brush;
+		public Rectangle BoxRec;
+		public ResultBoxType BoxType;
 
-        public void drawBox(Graphics iPaper)
-        {
-            boxRec.X = x;
-            boxRec.Y = y;
-            iPaper.FillRectangle(brush, boxRec);
-         
-        }
+		public ResultBox(int x, int y, ResultBoxType resultType)
+		{
+			X = x;
+			Y = y;
+			BoxType = resultType;
 
+			switch (resultType)
+			{
+				case ResultBoxType.Opened:
+					Brush = new SolidBrush(Color.AliceBlue);
+					break;
+				case ResultBoxType.Closed:
+					Brush = new SolidBrush(Color.LightGreen);
+					break;
+			}
 
-        public void Dispose()
-        {
-            if(this.brush!=null)
-                this.brush.Dispose();
+			Width = 18;
+			Height = 18;
+			BoxRec = new Rectangle(x, y, Width, Height);
+		}
 
-        }
-    }
+		public void DrawBox(Graphics graphics)
+		{
+			BoxRec.X = X;
+			BoxRec.Y = Y;
+			graphics.FillRectangle(Brush, BoxRec);
+		}
+
+		public void Dispose()
+			=> Brush?.Dispose();
+	}
 }

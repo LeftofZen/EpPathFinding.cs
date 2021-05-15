@@ -1,4 +1,4 @@
-﻿/*! 
+﻿/*!
 @file GridLine.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -35,44 +35,30 @@ THE SOFTWARE.
 An Interface for the GridLine Class.
 
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 
 namespace EpPathFinding.cs
 {
-    class GridLine
-    {
-        public int fromX, fromY, toX, toY;
-        public Pen pen;
-        
-        public GridLine(GridBox iFrom, GridBox iTo)
-        {
-            this.fromX = iFrom.boxRec.X + 9;
-            this.fromY = iFrom.boxRec.Y + 9;
-            this.toX = iTo.boxRec.X + 9;
-            this.toY = iTo.boxRec.Y + 9;
-            pen = new Pen(Color.Yellow);
-            pen.Width = 2;
-            
-            
-        }
+	internal class GridLine
+	{
+		public int FromX, FromY, ToX, ToY;
+		public Pen Pen;
 
-        public void drawLine(Graphics iPaper)
-        {
-            iPaper.DrawLine(pen, fromX, fromY, toX, toY);
-            
-        }
+		public GridLine(GridBox from, GridBox to)
+		{
+			FromX = from.BoxRect.X + 9;
+			FromY = from.BoxRect.Y + 9;
+			ToX = to.BoxRect.X + 9;
+			ToY = to.BoxRect.Y + 9;
+			Pen = new Pen(Color.Yellow)
+			{
+				Width = 2
+			};
+		}
 
+		public void DrawLine(Graphics graphics)
+			=> graphics.DrawLine(Pen, FromX, FromY, ToX, ToY);
 
-        public void Dispose()
-        {
-            if (this.pen != null)
-                this.pen.Dispose();
-
-        }
-    }
+		public void Dispose() => Pen?.Dispose();
+	}
 }

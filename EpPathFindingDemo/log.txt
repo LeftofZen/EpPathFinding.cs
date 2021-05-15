@@ -1,0 +1,97 @@
+2021-05-10 23:59:03.616 +10:00 [INF] MSBuild registered from C:\Program Files\dotnet\sdk\5.0.202\
+2021-05-10 23:59:03.822 +10:00 [INF] Registered 1 extensions:
+	Default extension
+2021-05-10 23:59:06.788 +10:00 [INF] Initializing upgrade step Select an entrypoint
+2021-05-10 23:59:14.615 +10:00 [INF] Applying upgrade step Select an entrypoint
+2021-05-10 23:59:21.512 +10:00 [INF] Upgrade step Select an entrypoint applied successfully
+2021-05-10 23:59:23.519 +10:00 [INF] Initializing upgrade step Select project to upgrade
+2021-05-10 23:59:27.909 +10:00 [INF] Applying upgrade step Select project to upgrade
+2021-05-10 23:59:33.414 +10:00 [INF] Upgrade step Select project to upgrade applied successfully
+2021-05-10 23:59:39.554 +10:00 [INF] Initializing upgrade step Back up project
+2021-05-10 23:59:41.725 +10:00 [INF] Applying upgrade step Back up project
+2021-05-10 23:59:47.507 +10:00 [INF] Backing up C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFinding.cs\EpPathFinding.cs to C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo.backup\EpPathFinding.cs
+2021-05-10 23:59:47.714 +10:00 [INF] Project backed up to C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo.backup\EpPathFinding.cs
+2021-05-10 23:59:47.715 +10:00 [INF] Upgrade step Back up project applied successfully
+2021-05-10 23:59:50.245 +10:00 [INF] Initializing upgrade step Convert project file to SDK style
+2021-05-10 23:59:52.444 +10:00 [INF] Applying upgrade step Convert project file to SDK style
+2021-05-10 23:59:52.447 +10:00 [INF] Converting project file format with try-convert, version 0.7.217901
+2021-05-10 23:59:56.182 +10:00 [INF] [try-convert] Conversion complete!
+2021-05-10 23:59:56.551 +10:00 [INF] Project file converted successfully! The project may require additional changes to build successfully against the new .NET target.
+2021-05-10 23:59:58.859 +10:00 [INF] Upgrade step Convert project file to SDK style applied successfully
+2021-05-11 00:00:02.178 +10:00 [INF] Initializing upgrade step Clean up NuGet package references
+2021-05-11 00:00:04.298 +10:00 [INF] Reference to .NET Upgrade Assistant analyzer package (Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, version 0.2.222702) needs added
+2021-05-11 00:00:04.312 +10:00 [INF] Packages to be added:
+Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.2.222702
+2021-05-11 00:00:07.028 +10:00 [INF] Applying upgrade step Clean up NuGet package references
+2021-05-11 00:00:07.035 +10:00 [INF] Adding package reference: Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.2.222702
+2021-05-11 00:00:09.522 +10:00 [INF] Upgrade step Clean up NuGet package references applied successfully
+2021-05-11 00:00:17.014 +10:00 [INF] Initializing upgrade step Update TFM
+2021-05-11 00:00:17.022 +10:00 [INF] TFM needs updated to netstandard2.0
+2021-05-11 00:00:18.805 +10:00 [INF] Applying upgrade step Update TFM
+2021-05-11 00:00:22.188 +10:00 [INF] Updated TFM to netstandard2.0
+2021-05-11 00:00:22.189 +10:00 [INF] Upgrade step Update TFM applied successfully
+2021-05-11 00:00:25.288 +10:00 [INF] Initializing upgrade step Update NuGet Packages
+2021-05-11 00:00:26.314 +10:00 [INF] No package updates needed
+2021-05-11 00:00:26.314 +10:00 [INF] Initializing upgrade step Add template files
+2021-05-11 00:00:26.355 +10:00 [INF] 0 expected template items needed
+2021-05-11 00:00:26.379 +10:00 [INF] Initializing upgrade step Update source code
+2021-05-11 00:00:27.585 +10:00 [INF] Initializing upgrade step Move to next project
+2021-05-11 00:00:30.676 +10:00 [INF] Applying upgrade step Move to next project
+2021-05-11 00:00:30.677 +10:00 [INF] Upgrade step Move to next project applied successfully
+2021-05-11 00:00:34.157 +10:00 [INF] Initializing upgrade step Select project to upgrade
+2021-05-11 00:00:37.380 +10:00 [INF] Applying upgrade step Select project to upgrade
+2021-05-11 00:00:43.336 +10:00 [INF] Upgrade step Select project to upgrade applied successfully
+2021-05-11 00:00:44.072 +10:00 [INF] Initializing upgrade step Back up project
+2021-05-11 00:00:46.331 +10:00 [INF] Applying upgrade step Back up project
+2021-05-11 00:00:47.991 +10:00 [INF] Backing up C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo to C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo.backup\EpPathFindingDemo
+2021-05-11 00:00:48.030 +10:00 [WRN] Could not copy file C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo\log.txt due to 'The process cannot access the file 'C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo\log.txt' because it is being used by another process.'
+2021-05-11 00:00:48.388 +10:00 [INF] Project backed up to C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo.backup\EpPathFindingDemo
+2021-05-11 00:00:48.388 +10:00 [INF] Upgrade step Back up project applied successfully
+2021-05-11 00:00:49.248 +10:00 [INF] Initializing upgrade step Convert project file to SDK style
+2021-05-11 00:00:51.856 +10:00 [INF] Applying upgrade step Convert project file to SDK style
+2021-05-11 00:00:51.857 +10:00 [INF] Converting project file format with try-convert, version 0.7.217901
+2021-05-11 00:00:54.406 +10:00 [INF] [try-convert] Conversion complete!
+2021-05-11 00:00:54.648 +10:00 [INF] Project file converted successfully! The project may require additional changes to build successfully against the new .NET target.
+2021-05-11 00:00:55.842 +10:00 [INF] Upgrade step Convert project file to SDK style applied successfully
+2021-05-11 00:00:57.819 +10:00 [INF] Initializing upgrade step Clean up NuGet package references
+2021-05-11 00:00:58.938 +10:00 [INF] Marking package C5 for removal because it appears to be a transitive dependency
+2021-05-11 00:00:58.939 +10:00 [INF] Marking package Microsoft.CSharp for removal because it appears to be a transitive dependency
+2021-05-11 00:00:58.940 +10:00 [INF] Marking package System.Data.DataSetExtensions for removal because it appears to be a transitive dependency
+2021-05-11 00:00:58.944 +10:00 [INF] Reference to .NET Upgrade Assistant analyzer package (Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, version 0.2.222702) needs added
+2021-05-11 00:00:58.946 +10:00 [INF] Packages to be removed:
+C5, Version=2.5.3
+Microsoft.CSharp, Version=4.7.0
+System.Data.DataSetExtensions, Version=4.5.0
+2021-05-11 00:00:58.947 +10:00 [INF] Packages to be added:
+Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.2.222702
+2021-05-11 00:00:59.754 +10:00 [INF] Applying upgrade step Clean up NuGet package references
+2021-05-11 00:00:59.755 +10:00 [INF] Removing outdated package reference: C5, Version=2.5.3
+2021-05-11 00:00:59.757 +10:00 [INF] Removing outdated package reference: Microsoft.CSharp, Version=4.7.0
+2021-05-11 00:00:59.758 +10:00 [INF] Removing outdated package reference: System.Data.DataSetExtensions, Version=4.5.0
+2021-05-11 00:00:59.758 +10:00 [INF] Adding package reference: Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers, Version=0.2.222702
+2021-05-11 00:01:01.238 +10:00 [INF] Upgrade step Clean up NuGet package references applied successfully
+2021-05-11 00:01:03.775 +10:00 [INF] Initializing upgrade step Update TFM
+2021-05-11 00:01:03.801 +10:00 [INF] TFM needs updated to net5.0-windows
+2021-05-11 00:01:04.863 +10:00 [INF] Applying upgrade step Update TFM
+2021-05-11 00:01:09.765 +10:00 [INF] Updated TFM to net5.0-windows
+2021-05-11 00:01:09.767 +10:00 [INF] Upgrade step Update TFM applied successfully
+2021-05-11 00:01:10.884 +10:00 [INF] Initializing upgrade step Update NuGet Packages
+2021-05-11 00:01:12.930 +10:00 [INF] Adding Microsoft.Windows.Compatibility 5.0.2
+2021-05-11 00:01:12.933 +10:00 [INF] Packages to be added:
+Microsoft.Windows.Compatibility, Version=5.0.2
+2021-05-11 00:01:13.779 +10:00 [INF] Applying upgrade step Update NuGet Packages
+2021-05-11 00:01:13.779 +10:00 [INF] Adding package reference: Microsoft.Windows.Compatibility, Version=5.0.2
+2021-05-11 00:01:22.558 +10:00 [INF] Upgrade step Update NuGet Packages applied successfully
+2021-05-11 00:01:26.121 +10:00 [INF] Initializing upgrade step Add template files
+2021-05-11 00:01:26.128 +10:00 [INF] 0 expected template items needed
+2021-05-11 00:01:26.130 +10:00 [INF] Initializing upgrade step Upgrade app config files
+2021-05-11 00:01:26.160 +10:00 [INF] Found 0 app settings for upgrade: 
+2021-05-11 00:01:26.196 +10:00 [INF] Initializing upgrade step Update source code
+2021-05-11 00:01:26.718 +10:00 [INF] Initializing upgrade step Move to next project
+2021-05-11 00:01:29.334 +10:00 [INF] Applying upgrade step Move to next project
+2021-05-11 00:01:29.335 +10:00 [INF] Upgrade step Move to next project applied successfully
+2021-05-11 00:01:30.913 +10:00 [INF] Initializing upgrade step Finalize upgrade
+2021-05-11 00:01:36.345 +10:00 [INF] Applying upgrade step Finalize upgrade
+2021-05-11 00:01:36.347 +10:00 [INF] Upgrade step Finalize upgrade applied successfully
+2021-05-11 00:01:37.187 +10:00 [INF] Upgrade has completed. Please review any changes.
+2021-05-11 00:01:37.189 +10:00 [INF] Saving upgrade progress file at C:\Users\bigba\source\repos\EpPathFinding.cs\EpPathFindingDemo\.upgrade-assistant
