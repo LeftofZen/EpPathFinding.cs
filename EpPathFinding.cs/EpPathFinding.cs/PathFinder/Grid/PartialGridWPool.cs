@@ -1,4 +1,4 @@
-/*! 
+/*!
 @file PartialGridWPool.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -35,148 +35,104 @@ THE SOFTWARE.
 An Interface for the PartialGrid with Pool Class.
 
 */
-using System;
-using System.Collections.Generic;
-using System.Collections;
 
 namespace EpPathFinding.cs
 {
-    public class PartialGridWPool : BaseGrid
-    {
-        private NodePool m_nodePool;
+	public class PartialGridWPool : BaseGrid
+	{
+		private readonly NodePool nodePool;
 
-        public override int width
-        {
-            get
-            {
-                return m_gridRect.maxX - m_gridRect.minX + 1;
-            }
-            protected set
-            {
+		public override int Width
+		{
+			get => gridRect.Right - gridRect.Left + 1;
+			protected set { }
+		}
 
-            }
-        }
+		public override int Height
+		{
+			get => gridRect.Bottom - gridRect.Top + 1;
+			protected set { }
+		}
 
-        public override int height
-        {
-            get
-            {
-                return m_gridRect.maxY - m_gridRect.minY + 1;
-            }
-            protected set
-            {
+		public PartialGridWPool(NodePool _nodePool, GridRect _gridRect = null)
+		{
+			gridRect = _gridRect ?? new GridRect();
+			nodePool = _nodePool;
+		}
 
-            }
-        }
+		public PartialGridWPool(PartialGridWPool b)
+			: base(b)
+			=> nodePool = b.nodePool;
 
+		public void SetGridRect(GridRect _gridRect)
+			=> gridRect = _gridRect;
 
-        public PartialGridWPool(NodePool iNodePool, GridRect iGridRect = null)
-            : base()
-        {
-            if (iGridRect == null)
-                m_gridRect = new GridRect();
-            else
-                m_gridRect = iGridRect;
-            m_nodePool = iNodePool;
-        }
+		public bool IsInside(int x, int y)
+			=> x >= gridRect.Left && x <= gridRect.Right && y >= gridRect.Top && y <= gridRect.Bottom;
 
-        public PartialGridWPool(PartialGridWPool b)
-            : base(b)
-        {
-            m_nodePool = b.m_nodePool;
-        }
-       
-        public void SetGridRect(GridRect iGridRect)
-        {
-            m_gridRect = iGridRect;
-        }
+		public override Node GetNodeAt(int x, int y)
+		{
+			var pos = new GridPos(x, y);
+			return GetNodeAt(pos);
+		}
 
+		public override bool IsWalkableAt(int x, int y)
+		{
+			var pos = new GridPos(x, y);
+			return IsWalkableAt(pos);
+		}
 
-        public bool IsInside(int iX, int iY)
-        {
-            if (iX < m_gridRect.minX || iX > m_gridRect.maxX || iY < m_gridRect.minY || iY > m_gridRect.maxY)
-                return false;
-            return true;
-        }
+		public override bool SetWalkableAt(int x, int y, bool walkable)
+		{
+			if (!IsInside(x, y))
+			{
+				return false;
+			}
 
-        public override Node GetNodeAt(int iX, int iY)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            return GetNodeAt(pos);
-        }
+			var pos = new GridPos(x, y);
+			_ = nodePool.SetNode(pos, walkable);
+			return true;
+		}
 
-        public override bool IsWalkableAt(int iX, int iY)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            return IsWalkableAt(pos);
-        }
+		public bool IsInside(GridPos pos)
+			=> IsInside(pos.X, pos.Y);
 
-        public override bool SetWalkableAt(int iX, int iY, bool iWalkable)
-        {
-            if (!IsInside(iX,iY))
-                return false;
-            GridPos pos = new GridPos(iX, iY);
-            m_nodePool.SetNode(pos, iWalkable);
-            return true;
-        }
+		public override Node GetNodeAt(GridPos pos)
+			=> !IsInside(pos) ? null : nodePool.GetNode(pos);
 
-        public bool IsInside(GridPos iPos)
-        {
-            return IsInside(iPos.x, iPos.y);
-        }
+		public override bool IsWalkableAt(GridPos pos)
+			=> IsInside(pos) && nodePool.Nodes.ContainsKey(pos);
 
-        public override Node GetNodeAt(GridPos iPos)
-        {
-            if (!IsInside(iPos))
-                return null;
-            return m_nodePool.GetNode(iPos);
-        }
+		public override bool SetWalkableAt(GridPos pos, bool walkable)
+			=> SetWalkableAt(pos.X, pos.Y, walkable);
 
-        public override bool IsWalkableAt(GridPos iPos)
-        {
-            if (!IsInside(iPos))
-                return false;
-            return m_nodePool.Nodes.ContainsKey(iPos);
-        }
+		public override void Reset()
+		{
+			var rectCount = (gridRect.Right - gridRect.Left) * (gridRect.Bottom - gridRect.Top);
+			if (nodePool.Nodes.Count > rectCount)
+			{
+				var travPos = new GridPos(0, 0);
+				for (var xTrav = gridRect.Left; xTrav <= gridRect.Right; xTrav++)
+				{
+					travPos.X = xTrav;
+					for (var yTrav = gridRect.Top; yTrav <= gridRect.Bottom; yTrav++)
+					{
+						travPos.Y = yTrav;
+						var curNode = nodePool.GetNode(travPos);
+						curNode?.Reset();
+					}
+				}
+			}
+			else
+			{
+				foreach (var keyValue in nodePool.Nodes)
+				{
+					keyValue.Value.Reset();
+				}
+			}
+		}
 
-        public override bool SetWalkableAt(GridPos iPos, bool iWalkable)
-        {
-            return SetWalkableAt(iPos.x, iPos.y, iWalkable);
-        }
-
-        public override void Reset()
-        {
-            int rectCount=(m_gridRect.maxX-m_gridRect.minX) * (m_gridRect.maxY-m_gridRect.minY);
-            if (m_nodePool.Nodes.Count > rectCount)
-            {
-                GridPos travPos = new GridPos(0, 0);
-                for (int xTrav = m_gridRect.minX; xTrav <= m_gridRect.maxX; xTrav++)
-                {
-                    travPos.x = xTrav;
-                    for (int yTrav = m_gridRect.minY; yTrav <= m_gridRect.maxY; yTrav++)
-                    {
-                        travPos.y = yTrav;
-                        Node curNode=m_nodePool.GetNode(travPos);
-                        if (curNode!=null)
-                            curNode.Reset();
-                    }
-                }
-            }
-            else
-            {
-                foreach (KeyValuePair<GridPos, Node> keyValue in m_nodePool.Nodes)
-                {
-                    keyValue.Value.Reset();
-                }
-            }
-        }
-
-
-        public override BaseGrid Clone()
-        {
-            PartialGridWPool tNewGrid = new PartialGridWPool(m_nodePool,m_gridRect);
-            return tNewGrid;
-        }
-    }
-
+		public override BaseGrid Clone()
+			=> new PartialGridWPool(nodePool, gridRect);
+	}
 }

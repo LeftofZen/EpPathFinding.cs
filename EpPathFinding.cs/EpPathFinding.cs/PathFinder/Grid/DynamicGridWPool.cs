@@ -1,4 +1,4 @@
-﻿/*! 
+﻿/*!
 @file DynamicGridWPool.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -35,149 +35,158 @@ THE SOFTWARE.
 An Interface for the DynamicGrid with Pool Class.
 
 */
-using System;
-using System.Collections.Generic;
-using System.Collections;
-
 
 namespace EpPathFinding.cs
 {
-    public class DynamicGridWPool : BaseGrid
-    {
-         private bool m_notSet;
-         private NodePool m_nodePool;
+	public class DynamicGridWPool : BaseGrid
+	{
+		private bool notSet;
+		private readonly NodePool nodePool;
 
-        public override int width
-        {
-            get
-            {
-                if (m_notSet)
-                    setBoundingBox();
-                return m_gridRect.maxX - m_gridRect.minX + 1;
-            }
-            protected set
-            {
+		public override int Width
+		{
+			get
+			{
+				if (notSet)
+				{
+					SetBoundingBox();
+				}
 
-            }
-        }
+				return gridRect.Right - gridRect.Left + 1;
+			}
+			protected set { }
+		}
 
-        public override int height
-        {
-            get
-            {
-                if (m_notSet)
-                    setBoundingBox();
-                return m_gridRect.maxY - m_gridRect.minY + 1;
-            }
-            protected set
-            {
+		public override int Height
+		{
+			get
+			{
+				if (notSet)
+				{
+					SetBoundingBox();
+				}
 
-            }
-        }
+				return gridRect.Bottom - gridRect.Top + 1;
+			}
+			protected set { }
+		}
 
-        public DynamicGridWPool(NodePool iNodePool)
-            : base()
-        {
-            m_gridRect = new GridRect();
-            m_gridRect.minX = 0;
-            m_gridRect.minY = 0;
-            m_gridRect.maxX = 0;
-            m_gridRect.maxY = 0;
-            m_notSet = true;
-            m_nodePool = iNodePool;
-        }
+		public DynamicGridWPool(NodePool _nodePool)
+		{
+			gridRect = new GridRect
+			{
+				Left = 0,
+				Top = 0,
+				Right = 0,
+				Bottom = 0
+			};
+			notSet = true;
+			nodePool = _nodePool;
+		}
 
-        public DynamicGridWPool(DynamicGridWPool b)
-            : base(b)
-        {
-            m_notSet = b.m_notSet;
-            m_nodePool = b.m_nodePool;
-        }
+		public DynamicGridWPool(DynamicGridWPool b)
+			: base(b)
+		{
+			notSet = b.notSet;
+			nodePool = b.nodePool;
+		}
 
-        public override Node GetNodeAt(int iX, int iY)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            return GetNodeAt(pos);
-        }
+		public override Node GetNodeAt(int x, int y)
+		{
+			var pos = new GridPos(x, y);
+			return GetNodeAt(pos);
+		}
 
-        public override bool IsWalkableAt(int iX, int iY)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            return IsWalkableAt(pos);
-        }
+		public override bool IsWalkableAt(int x, int y)
+		{
+			var pos = new GridPos(x, y);
+			return IsWalkableAt(pos);
+		}
 
-        private void setBoundingBox()
-        {
-            m_notSet = true;
-            foreach (KeyValuePair<GridPos, Node> pair in m_nodePool.Nodes)
-            {
-                if (pair.Key.x < m_gridRect.minX || m_notSet)
-                    m_gridRect.minX = pair.Key.x;
-                if (pair.Key.x > m_gridRect.maxX || m_notSet)
-                    m_gridRect.maxX = pair.Key.x;
-                if (pair.Key.y < m_gridRect.minY || m_notSet)
-                    m_gridRect.minY = pair.Key.y;
-                if (pair.Key.y > m_gridRect.maxY || m_notSet)
-                    m_gridRect.maxY = pair.Key.y;
-                m_notSet = false;
-            }
-            m_notSet = false;
-        }
+		private void SetBoundingBox()
+		{
+			notSet = true;
+			foreach (var pair in nodePool.Nodes)
+			{
+				if (pair.Key.X < gridRect.Left || notSet)
+				{
+					gridRect.Left = pair.Key.X;
+				}
 
-        public override bool SetWalkableAt(int iX, int iY, bool iWalkable)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            m_nodePool.SetNode(pos, iWalkable);
-            if (iWalkable)
-            {
-                if (iX < m_gridRect.minX || m_notSet)
-                    m_gridRect.minX = iX;
-                if (iX > m_gridRect.maxX || m_notSet)
-                    m_gridRect.maxX = iX;
-                if (iY < m_gridRect.minY || m_notSet)
-                    m_gridRect.minY = iY;
-                if (iY > m_gridRect.maxY || m_notSet)
-                    m_gridRect.maxY = iY;
-                //m_notSet = false;
-            }
-            else
-            {
-                if (iX == m_gridRect.minX || iX == m_gridRect.maxX || iY == m_gridRect.minY || iY == m_gridRect.maxY)
-                    m_notSet = true;
-                
-            }
-            return true;
-        }
+				if (pair.Key.X > gridRect.Right || notSet)
+				{
+					gridRect.Right = pair.Key.X;
+				}
 
-        public override Node GetNodeAt(GridPos iPos)
-        {
-            return m_nodePool.GetNode(iPos);
-        }
+				if (pair.Key.Y < gridRect.Top || notSet)
+				{
+					gridRect.Top = pair.Key.Y;
+				}
 
-        public override bool IsWalkableAt(GridPos iPos)
-        {
-            return  m_nodePool.Nodes.ContainsKey(iPos);
-        }
+				if (pair.Key.Y > gridRect.Bottom || notSet)
+				{
+					gridRect.Bottom = pair.Key.Y;
+				}
 
-        public override bool SetWalkableAt(GridPos iPos, bool iWalkable)
-        {
-            return SetWalkableAt(iPos.x, iPos.y, iWalkable);
-        }
+				notSet = false;
+			}
+			notSet = false;
+		}
 
+		public override bool SetWalkableAt(int x, int y, bool walkable)
+		{
+			var pos = new GridPos(x, y);
+			_ = nodePool.SetNode(pos, walkable);
 
-        public override void Reset()
-        {
-            foreach (KeyValuePair<GridPos, Node> keyValue in m_nodePool.Nodes)
-            {
-                keyValue.Value.Reset();
-            }
-        }
+			if (walkable)
+			{
+				if (x < gridRect.Left || notSet)
+				{
+					gridRect.Left = x;
+				}
 
-        public override BaseGrid Clone()
-        {
-            DynamicGridWPool tNewGrid = new DynamicGridWPool(m_nodePool);
-            return tNewGrid;
-        }
-    }
+				if (x > gridRect.Right || notSet)
+				{
+					gridRect.Right = x;
+				}
 
+				if (y < gridRect.Top || notSet)
+				{
+					gridRect.Top = y;
+				}
+
+				if (y > gridRect.Bottom || notSet)
+				{
+					gridRect.Bottom = y;
+				}
+			}
+			else
+			{
+				if (x == gridRect.Left || x == gridRect.Right || y == gridRect.Top || y == gridRect.Bottom)
+				{
+					notSet = true;
+				}
+			}
+			return true;
+		}
+
+		public override Node GetNodeAt(GridPos pos)
+			=> nodePool.GetNode(pos);
+
+		public override bool IsWalkableAt(GridPos pos)
+			=> nodePool.Nodes.ContainsKey(pos);
+
+		public override bool SetWalkableAt(GridPos pos, bool walkable)
+			=> SetWalkableAt(pos.X, pos.Y, walkable);
+		public override BaseGrid Clone()
+			=> new DynamicGridWPool(nodePool);
+
+		public override void Reset()
+		{
+			foreach (var keyValue in nodePool.Nodes)
+			{
+				keyValue.Value.Reset();
+			}
+		}
+	}
 }

@@ -1,4 +1,4 @@
-﻿/*! 
+﻿/*!
 @file Heuristic.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -36,36 +36,29 @@ An Interface for the Heuristic Function Class.
 
 */
 using System;
-using System.Collections.Generic;
-using System.Collections;
 
 namespace EpPathFinding.cs
 {
-    public enum HeuristicMode
-    {
-        MANHATTAN,
-        EUCLIDEAN,
-        CHEBYSHEV,
+	public enum HeuristicMode
+	{
+		Manhattan,
+		Euclidean,
+		EuclideanSquared,
+		Chebyshev,
+	};
 
-    };
+	public static class Heuristic
+	{
+		public static float Manhattan(int dx, int dy)
+			=> (float)dx + dy;
 
-    public class Heuristic
-    {
-        public static float Manhattan(int iDx, int iDy)
-        {
-            return (float)iDx + iDy;
-        }
+		public static float Euclidean(int dx, int dy)
+			=> (float)Math.Sqrt((dx * dx) + (dy * dy));
 
-        public static float Euclidean(int iDx, int iDy)
-        {
-            float tFdx = (float)iDx;
-            float tFdy = (float)iDy;
-            return (float)Math.Sqrt((double)(tFdx * tFdx + tFdy * tFdy));
-        }
+		public static float EuclideanSquared(int dx, int dy)
+			=> (dx * dx) + (dy * dy);
 
-        public static float Chebyshev(int iDx, int iDy)
-        {
-            return (float)Math.Max(iDx, iDy);
-        }
-    }
+		public static float Chebyshev(int dx, int dy)
+			=> Math.Max(dx, dy);
+	}
 }

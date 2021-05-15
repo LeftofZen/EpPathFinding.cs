@@ -1,4 +1,4 @@
-/*! 
+/*!
 @file NodePool.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -35,82 +35,60 @@ THE SOFTWARE.
 An Interface for the NodePool Class.
 
 */
-using System;
 using System.Collections.Generic;
-using System.Collections;
 
 namespace EpPathFinding.cs
 {
-    public class NodePool
-    {
-        protected Dictionary<GridPos, Node> m_nodes;
+	public class NodePool
+	{
+		protected Dictionary<GridPos, Node> nodes;
 
-        public NodePool()
-        {
-            m_nodes = new Dictionary<GridPos, Node>();
-        }
+		public NodePool()
+			=> nodes = new Dictionary<GridPos, Node>();
 
-        public Dictionary<GridPos, Node> Nodes
-        {
-            get { return m_nodes; }
-        }
-        public Node GetNode(int iX, int iY)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            return GetNode(pos);
-        }
+		public Dictionary<GridPos, Node> Nodes
+			=> nodes;
 
-        public Node GetNode(GridPos iPos)
-        {
-            Node retVal = null;
-            m_nodes.TryGetValue(iPos, out retVal);
-            return retVal;
-        }
+		public Node GetNode(int x, int y)
+			=> GetNode(new GridPos(x, y));
 
-        public Node SetNode(int iX, int iY, bool? iWalkable = null)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            return SetNode(pos, iWalkable);
-        }
+		public Node GetNode(GridPos pos)
+		{
+			_ = nodes.TryGetValue(pos, out var outNode);
+			return outNode;
+		}
 
-        public Node SetNode(GridPos iPos, bool? iWalkable = null)
-        {
-            if (iWalkable.HasValue)
-            {
-                if (iWalkable.Value == true)
-                {
-                    Node retVal = null;
-                    if (m_nodes.TryGetValue(iPos, out retVal))
-                    {
-                        return retVal;
-                    }
-                    Node newNode = new Node(iPos.x, iPos.y, iWalkable);
-                    m_nodes.Add(iPos, newNode);
-                    return newNode;
-                }
-                else
-                {
-                    removeNode(iPos);
-                }
+		public Node SetNode(int x, int y, bool walkable = false)
+			=> SetNode(new GridPos(x, y), walkable);
 
-            }
-            else
-            {
-                Node newNode = new Node(iPos.x, iPos.y, true);
-                m_nodes.Add(iPos, newNode);
-                return newNode;
-            }
-            return null;
-        }
-        protected void removeNode(int iX, int iY)
-        {
-            GridPos pos = new GridPos(iX, iY);
-            removeNode(pos);
-        }
-        protected void removeNode(GridPos iPos)
-        {
-            if (m_nodes.ContainsKey(iPos))
-                m_nodes.Remove(iPos);
-        }
-    }
+		public Node SetNode(GridPos pos, bool walkable = false)
+		{
+			if (walkable)
+			{
+				if (nodes.TryGetValue(pos, out var retVal))
+				{
+					return retVal;
+				}
+				var newNode = new Node(pos.X, pos.Y, walkable);
+				nodes.Add(pos, newNode);
+				return newNode;
+			}
+			else
+			{
+				RemoveNode(pos);
+				return null;
+			}
+		}
+
+		protected void RemoveNode(int x, int y)
+			=> RemoveNode(new GridPos(x, y));
+
+		protected void RemoveNode(GridPos pos)
+		{
+			if (nodes.ContainsKey(pos))
+			{
+				_ = nodes.Remove(pos);
+			}
+		}
+	}
 }

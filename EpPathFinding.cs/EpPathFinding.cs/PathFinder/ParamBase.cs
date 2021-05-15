@@ -1,117 +1,135 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/*!
+@file JumpPointFinder.cs
+@author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
+		<http://github.com/juhgiyo/eppathfinding.cs>
+@date July 16, 2013
+@brief Param Base Interface
+@version 2.0
+
+@section LICENSE
+
+The MIT License (MIT)
+
+Copyright (c) 2013 Woong Gyu La <juhgiyo@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+@section DESCRIPTION
+
+An Interface for the Jump Point Search Algorithm Class.
+
+*/
 
 namespace EpPathFinding.cs
 {
-    public delegate float HeuristicDelegate(int iDx, int iDy);
+	public delegate float HeuristicDelegate(int iDx, int iDy);
 
-    public abstract class ParamBase
-    {
-        public ParamBase(BaseGrid iGrid, GridPos iStartPos, GridPos iEndPos, DiagonalMovement iDiagonalMovement, HeuristicMode iMode) : this(iGrid, iDiagonalMovement, iMode)
-        {
-            m_startNode = m_searchGrid.GetNodeAt(iStartPos.x, iStartPos.y);
-            m_endNode = m_searchGrid.GetNodeAt(iEndPos.x, iEndPos.y);
-            if (m_startNode == null)
-                m_startNode = new Node(iStartPos.x, iStartPos.y, true);
-            if (m_endNode == null)
-                m_endNode = new Node(iEndPos.x, iEndPos.y, true);
-        }
+	public abstract class ParamBase
+	{
+		protected ParamBase(BaseGrid grid, GridPos startPos, GridPos endPos, DiagonalMovement diagonalMovement, HeuristicMode mode) : this(grid, diagonalMovement, mode)
+		{
+			startNode = searchGrid.GetNodeAt(startPos.X, startPos.Y);
+			endNode = searchGrid.GetNodeAt(endPos.X, endPos.Y);
 
-        public ParamBase(BaseGrid iGrid, DiagonalMovement iDiagonalMovement, HeuristicMode iMode)
-        {
-            SetHeuristic(iMode);
+			if (startNode == null)
+			{
+				startNode = new Node(startPos.X, startPos.Y, true);
+			}
 
-            m_searchGrid = iGrid;
-            DiagonalMovement = iDiagonalMovement;
-            m_startNode = null;
-            m_endNode = null;
-        }
+			if (endNode == null)
+			{
+				endNode = new Node(endPos.X, endPos.Y, true);
+			}
+		}
 
-        public ParamBase(ParamBase param)
-        {
-            m_searchGrid = param.m_searchGrid;
-            DiagonalMovement = param.DiagonalMovement;
-            m_startNode = param.m_startNode;
-            m_endNode = param.m_endNode;
-            
-        }
+		protected ParamBase(BaseGrid grid, DiagonalMovement diagonalMovement, HeuristicMode mode)
+		{
+			SetHeuristic(mode);
 
-        internal abstract void _reset(GridPos iStartPos, GridPos iEndPos, BaseGrid iSearchGrid = null);
+			searchGrid = grid;
+			DiagonalMovement = diagonalMovement;
+			startNode = null;
+			endNode = null;
+		}
 
-        public void Reset(GridPos iStartPos, GridPos iEndPos, BaseGrid iSearchGrid = null)
-        {
-            _reset(iStartPos, iEndPos, iSearchGrid);
-            m_startNode = null;
-            m_endNode = null;
+		protected ParamBase(ParamBase param)
+		{
+			searchGrid = param.searchGrid;
+			DiagonalMovement = param.DiagonalMovement;
+			startNode = param.startNode;
+			endNode = param.endNode;
+		}
 
-            if (iSearchGrid != null)
-                m_searchGrid = iSearchGrid;
-            m_searchGrid.Reset();
-            m_startNode = m_searchGrid.GetNodeAt(iStartPos.x, iStartPos.y);
-            m_endNode = m_searchGrid.GetNodeAt(iEndPos.x, iEndPos.y);
-            if (m_startNode == null)
-                m_startNode = new Node(iStartPos.x, iStartPos.y, true);
-            if (m_endNode == null)
-                m_endNode = new Node(iEndPos.x, iEndPos.y, true);
-        }
+		internal abstract void ResetInternal(GridPos startPos, GridPos endPos, BaseGrid searchGrid = null);
 
-        public DiagonalMovement DiagonalMovement;
-        public HeuristicDelegate HeuristicFunc
-        {
-            get
-            {
-                return m_heuristic;
-            }
-        }
+		public void Reset(GridPos startPos, GridPos endPos, BaseGrid _searchGrid = null)
+		{
+			ResetInternal(startPos, endPos, _searchGrid);
+			startNode = null;
+			endNode = null;
 
-        public BaseGrid SearchGrid
-        {
-            get
-            {
-                return m_searchGrid;
-            }
-        }
+			if (_searchGrid != null)
+			{
+				searchGrid = _searchGrid;
+			}
 
-        public Node StartNode
-        {
-            get
-            {
-                return m_startNode;
-            }
-        }
-        public Node EndNode
-        {
-            get
-            {
-                return m_endNode;
-            }
-        }
+			searchGrid.Reset();
+			startNode = searchGrid.GetNodeAt(startPos.X, startPos.Y);
+			endNode = searchGrid.GetNodeAt(endPos.X, endPos.Y);
 
-        public void SetHeuristic(HeuristicMode iMode)
-        {
-            m_heuristic = null;
-            switch (iMode)
-            {
-                case HeuristicMode.MANHATTAN:
-                    m_heuristic = new HeuristicDelegate(Heuristic.Manhattan);
-                    break;
-                case HeuristicMode.EUCLIDEAN:
-                    m_heuristic = new HeuristicDelegate(Heuristic.Euclidean);
-                    break;
-                case HeuristicMode.CHEBYSHEV:
-                    m_heuristic = new HeuristicDelegate(Heuristic.Chebyshev);
-                    break;
-                default:
-                    m_heuristic = new HeuristicDelegate(Heuristic.Euclidean);
-                    break;
-            }
-        }
+			if (startNode == null)
+			{
+				startNode = new Node(startPos.X, startPos.Y, true);
+			}
 
-        protected BaseGrid m_searchGrid;
-        protected Node m_startNode;
-        protected Node m_endNode;
-        protected HeuristicDelegate m_heuristic;
-    }
+			if (endNode == null)
+			{
+				endNode = new Node(endPos.X, endPos.Y, true);
+			}
+		}
+
+		public DiagonalMovement DiagonalMovement;
+
+		public HeuristicDelegate HeuristicFunc
+			=> heuristic;
+
+		public BaseGrid SearchGrid
+			=> searchGrid;
+
+		public Node StartNode
+			=> startNode;
+
+		public Node EndNode
+			=> endNode;
+
+		public void SetHeuristic(HeuristicMode mode)
+			=> heuristic = mode switch
+			{
+				HeuristicMode.Manhattan => new HeuristicDelegate(Heuristic.Manhattan),
+				HeuristicMode.Euclidean => new HeuristicDelegate(Heuristic.Euclidean),
+				HeuristicMode.Chebyshev => new HeuristicDelegate(Heuristic.Chebyshev),
+				_ => new HeuristicDelegate(Heuristic.Euclidean),
+			};
+
+		protected BaseGrid searchGrid;
+		protected Node startNode;
+		protected Node endNode;
+		protected HeuristicDelegate heuristic;
+	}
 }

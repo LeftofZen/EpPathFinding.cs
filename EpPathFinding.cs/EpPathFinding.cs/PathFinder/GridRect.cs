@@ -1,4 +1,4 @@
-/*! 
+/*!
 @file GridRect.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -35,101 +35,52 @@ THE SOFTWARE.
 An Interface for the GridRect Struct.
 
 */
+
 using System;
-using System.Collections.Generic;
-using System.Collections;
 
 namespace EpPathFinding.cs
 {
-    public class GridRect
-    {
-        public int minX;
-        public int minY;
-        public int maxX;
-        public int maxY;
-        public GridRect()
-        {
-            minX = 0;
-            minY = 0;
-            maxX = 0;
-            maxY = 0;
-        }
-        public GridRect(int iMinX, int iMinY, int iMaxX, int iMaxY)
-        {
-            minX = iMinX;
-            minY = iMinY;
-            maxX = iMaxX;
-            maxY = iMaxY;
-        }
+	public class GridRect : IEquatable<GridRect>
+	{
+		public int Left;
+		public int Top;
+		public int Right;
+		public int Bottom;
 
-        public GridRect(GridRect b)
-        {
-            minX = b.minX;
-            minY = b.minY;
-            maxX = b.maxX;
-            maxY = b.maxY;
-        }
+		public GridRect()
+			=> Set(0, 0, 0, 0);
 
-        public override int GetHashCode()
-        {
-            return minX ^ minY ^ maxX ^ maxY;
-        }
+		public GridRect(int left, int top, int right, int bottom)
+			=> Set(left, top, right, bottom);
 
-        public override bool Equals(System.Object obj)
-        {
-            // Unlikely to compare incorrect type so removed for performance
-            //if (!(obj.GetType() == typeof(GridRect)))
-            //    return false;
-            GridRect p = (GridRect)obj;
-            if (ReferenceEquals(null, p))
-            {
-                return false;
-            }
-            // Return true if the fields match:
-            return (minX == p.minX) && (minY == p.minY) && (maxX == p.maxX) && (maxY == p.maxY);
-        }
+		public GridRect(GridRect gr)
+			=> Set(gr.Left, gr.Top, gr.Right, gr.Bottom);
 
-        public bool Equals(GridRect p)
-        {
-            if (ReferenceEquals(null, p))
-            {
-                return false;
-            }
-            // Return true if the fields match:
-            return (minX == p.minX) && (minY == p.minY) && (maxX == p.maxX) && (maxY == p.maxY);
-        }
+		public void Set(int left, int top, int right, int bottom)
+		{
+			Left = left;
+			Top = top;
+			Right = right;
+			Bottom = bottom;
+		}
 
-        public static bool operator ==(GridRect a, GridRect b)
-        {
-            // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(a, b))
-            {
-                return true;
-            }
-            if (ReferenceEquals(null, a))
-            {
-                return false;
-            }
-            if (ReferenceEquals(null, b))
-            {
-                return false;
-            }
-            // Return true if the fields match:
-            return (a.minX == b.minX) && (a.minY == b.minY) && (a.maxX == b.maxX) && (a.maxY == b.maxY);
-        }
+		public override int GetHashCode()
+			=> Left ^ Top ^ Right ^ Bottom;
 
-        public static bool operator !=(GridRect a, GridRect b)
-        {
-            return !(a == b);
-        }
+		public override bool Equals(object obj)
+			=> obj is GridRect rect && Left == rect.Left && Top == rect.Top && Bottom == rect.Bottom && Right == rect.Right;
 
-        public GridRect Set(int iMinX, int iMinY, int iMaxX, int iMaxY)
-        {
-            this.minX = iMinX;
-            this.minY = iMinY;
-            this.maxX = iMaxX;
-            this.maxY = iMaxY;
-            return this;
-        }
-    }
+		public bool Equals(GridRect rect)
+			=> rect != null
+			&& (Left == rect.Left) && (Top == rect.Top) && (Right == rect.Right) && (Bottom == rect.Bottom);
+
+		public static bool operator ==(GridRect a, GridRect b)
+			=> ReferenceEquals(a, b) || (!(a is null) && !(b is null) && a.Left == b.Left && a.Top == b.Top && a.Bottom == b.Bottom && a.Right == b.Right);
+
+		public static bool operator !=(GridRect a, GridRect b)
+			=> !(a == b);
+
+		public override string ToString()
+			=> $"(Top={Top}, Left={Left}, Bottom={Bottom} Right={Right})";
+	}
 }

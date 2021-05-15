@@ -1,4 +1,4 @@
-﻿/*! 
+﻿/*!
 @file StaticGrid.cs
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
 		<http://github.com/juhgiyo/eppathfinding.cs>
@@ -35,193 +35,157 @@ THE SOFTWARE.
 An Interface for the StaticGrid Class.
 
 */
-using System;
-using System.Collections.Generic;
-using System.Collections;
 
 namespace EpPathFinding.cs
 {
-    public class StaticGrid : BaseGrid
-    {
-        public override int width { get; protected set; }
+	public class StaticGrid : BaseGrid
+	{
+		public override int Width { get; protected set; }
 
-        public override int height { get; protected set; }
+		public override int Height { get; protected set; }
 
-        private Node[][] m_nodes;
+		private Node[][] nodes;
 
-        public StaticGrid(int iWidth, int iHeight, bool[][] iMatrix = null):base()
-        {
-            width = iWidth;
-            height = iHeight;
-            m_gridRect.minX = 0;
-            m_gridRect.minY = 0;
-            m_gridRect.maxX = iWidth-1;
-            m_gridRect.maxY = iHeight - 1;
-            this.m_nodes = buildNodes(iWidth, iHeight, iMatrix);
-        }
+		public StaticGrid(int width, int height, bool[][] matrix = null)
+		{
+			Width = width;
+			Height = height;
+			gridRect.Left = 0;
+			gridRect.Top = 0;
+			gridRect.Right = width - 1;
+			gridRect.Bottom = height - 1;
+			nodes = BuildNodes(width, height, matrix);
+		}
 
-        public StaticGrid(StaticGrid b)
-            : base(b)
-        {
-            bool[][] tMatrix = new bool[b.width][];
-            for (int widthTrav = 0; widthTrav < b.width; widthTrav++)
-            {
-                tMatrix[widthTrav] = new bool[b.height];
-                for (int heightTrav = 0; heightTrav < b.height; heightTrav++)
-                {
-                    if(b.IsWalkableAt(widthTrav,heightTrav))
-                        tMatrix[widthTrav][heightTrav] = true;
-                    else
-                        tMatrix[widthTrav][heightTrav] = false;
-                }
-            }
-            this.m_nodes = buildNodes(b.width, b.height, tMatrix);
-        }
-       
-        private Node[][] buildNodes(int iWidth, int iHeight, bool[][] iMatrix)
-        {
+		public StaticGrid(StaticGrid b)
+			: base(b)
+		{
+			var tMatrix = new bool[b.Width][];
 
-            Node[][] tNodes = new Node[iWidth][];
-            for (int widthTrav = 0; widthTrav < iWidth; widthTrav++)
-            {
-                tNodes[widthTrav] = new Node[iHeight];
-                for (int heightTrav = 0; heightTrav < iHeight; heightTrav++)
-                {
-                    tNodes[widthTrav][heightTrav] = new Node(widthTrav, heightTrav, null);
-                }
-            }
+			for (var widthTrav = 0; widthTrav < b.Width; widthTrav++)
+			{
+				tMatrix[widthTrav] = new bool[b.Height];
+				for (var heightTrav = 0; heightTrav < b.Height; heightTrav++)
+				{
+					tMatrix[widthTrav][heightTrav] = b.IsWalkableAt(widthTrav, heightTrav);
+				}
+			}
 
-            if (iMatrix == null)
-            {
-                return tNodes;
-            }
+			nodes = BuildNodes(b.Width, b.Height, tMatrix);
+		}
 
-            if (iMatrix.Length != iWidth || iMatrix[0].Length != iHeight)
-            {
-                throw new System.Exception("Matrix size does not fit");
-            }
+		private Node[][] BuildNodes(int width, int height, bool[][] matrix)
+		{
+			var tNodes = new Node[width][];
 
+			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			{
+				tNodes[widthTrav] = new Node[height];
+				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				{
+					tNodes[widthTrav][heightTrav] = new Node(widthTrav, heightTrav);
+				}
+			}
 
-            for (int widthTrav = 0; widthTrav < iWidth; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < iHeight; heightTrav++)
-                {
-                    if (iMatrix[widthTrav][heightTrav])
-                    {
-                        tNodes[widthTrav][heightTrav].walkable = true;
-                    }
-                    else
-                    {
-                        tNodes[widthTrav][heightTrav].walkable = false;
-                    }
-                }
-            }
-            return tNodes;
-        }
+			if (matrix == null)
+			{
+				return tNodes;
+			}
 
-        public override Node GetNodeAt(int iX, int iY)
-        {
-            return this.m_nodes[iX][iY];
-        }
+			if (matrix.Length != width || matrix[0].Length != height)
+			{
+				throw new System.Exception("Matrix size does not fit");
+			}
 
-        public override bool IsWalkableAt(int iX, int iY)
-        {
-            return isInside(iX, iY) && this.m_nodes[iX][iY].walkable;
-        }
+			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				{
+					tNodes[widthTrav][heightTrav].Walkable = matrix[widthTrav][heightTrav];
+				}
+			}
 
-        protected bool isInside(int iX, int iY)
-        {
-            return (iX >= 0 && iX < width) && (iY >= 0 && iY < height);
-        }
+			return tNodes;
+		}
 
-        public override bool SetWalkableAt(int iX, int iY, bool iWalkable)
-        {
-            this.m_nodes[iX][iY].walkable = iWalkable;
-            return true;
-        }
+		public override Node GetNodeAt(int x, int y)
+			=> nodes[x][y];
 
-        protected bool isInside(GridPos iPos)
-        {
-            return isInside(iPos.x, iPos.y);
-        }
+		public override bool IsWalkableAt(int x, int y)
+			=> IsInside(x, y) && nodes[x][y].Walkable;
 
-        public override Node GetNodeAt(GridPos iPos)
-        {
-            return GetNodeAt(iPos.x, iPos.y);
-        }
+		protected bool IsInside(int x, int y)
+			=> x >= 0 && x < Width && y >= 0 && y < Height;
 
-        public override bool IsWalkableAt(GridPos iPos)
-        {
-            return IsWalkableAt(iPos.x, iPos.y);
-        }
+		public override bool SetWalkableAt(int x, int y, bool walkable)
+		{
+			nodes[x][y].Walkable = walkable;
+			return true;
+		}
 
-        public override bool SetWalkableAt(GridPos iPos, bool iWalkable)
-        {
-            return SetWalkableAt(iPos.x, iPos.y, iWalkable);
-        }
+		protected bool IsInside(GridPos pos)
+			=> IsInside(pos.X, pos.Y);
 
-        public override void Reset()
-        {
-            Reset(null);
-        }
+		public override Node GetNodeAt(GridPos pos)
+			=> GetNodeAt(pos.X, pos.Y);
 
-        public void Reset(bool[][] iMatrix)
-        {
-            for (int widthTrav = 0; widthTrav < width; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                {
-                    m_nodes[widthTrav][heightTrav].Reset();
-                }
-            }
+		public override bool IsWalkableAt(GridPos pos)
+			=> IsWalkableAt(pos.X, pos.Y);
 
-            if (iMatrix == null)
-            {
-                return;
-            }
-            if (iMatrix.Length != width || iMatrix[0].Length != height)
-            {
-                throw new System.Exception("Matrix size does not fit");
-            }
+		public override bool SetWalkableAt(GridPos pos, bool walkable)
+			=> SetWalkableAt(pos.X, pos.Y, walkable);
 
-            for (int widthTrav = 0; widthTrav < width; widthTrav++)
-            {
-                for (int heightTrav = 0; heightTrav < height; heightTrav++)
-                {
-                    if (iMatrix[widthTrav][heightTrav])
-                    {
-                        m_nodes[widthTrav][heightTrav].walkable = true;
-                    }
-                    else
-                    {
-                        m_nodes[widthTrav][heightTrav].walkable = false;
-                    }
-                }
-            }
-        }
+		public override void Reset()
+			=> Reset(null);
 
-        public override BaseGrid Clone()
-        {
-            int tWidth = width;
-            int tHeight = height;
-            Node[][] tNodes = this.m_nodes;
+		public void Reset(bool[][] matrix)
+		{
+			for (var widthTrav = 0; widthTrav < Width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < Height; heightTrav++)
+				{
+					nodes[widthTrav][heightTrav].Reset();
+				}
+			}
 
-            StaticGrid tNewGrid = new StaticGrid(tWidth, tHeight, null);
+			if (matrix == null)
+			{
+				return;
+			}
 
-            Node[][] tNewNodes = new Node[tWidth][];
-            for (int widthTrav = 0; widthTrav < tWidth; widthTrav++)
-            {
-                tNewNodes[widthTrav] = new Node[tHeight];
-                for (int heightTrav = 0; heightTrav < tHeight; heightTrav++)
-                {
-                    tNewNodes[widthTrav][heightTrav] = new Node(widthTrav, heightTrav, tNodes[widthTrav][heightTrav].walkable);
-                }
-            }
-            tNewGrid.m_nodes = tNewNodes;
+			if (matrix.Length != Width || matrix[0].Length != Height)
+			{
+				throw new System.Exception("Matrix size does not fit");
+			}
 
-            return tNewGrid;
-        }
-    }
+			for (var widthTrav = 0; widthTrav < Width; widthTrav++)
+			{
+				for (var heightTrav = 0; heightTrav < Height; heightTrav++)
+				{
+					nodes[widthTrav][heightTrav].Walkable = matrix[widthTrav][heightTrav];
+				}
+			}
+		}
 
+		public override BaseGrid Clone()
+		{
+			var tWidth = Width;
+			var tHeight = Height;
+			var tNodes = nodes;
+			var tNewGrid = new StaticGrid(tWidth, tHeight, null);
+			var tNewNodes = new Node[tWidth][];
 
+			for (var widthTrav = 0; widthTrav < tWidth; widthTrav++)
+			{
+				tNewNodes[widthTrav] = new Node[tHeight];
+				for (var heightTrav = 0; heightTrav < tHeight; heightTrav++)
+				{
+					tNewNodes[widthTrav][heightTrav] = new Node(widthTrav, heightTrav, tNodes[widthTrav][heightTrav].Walkable);
+				}
+			}
+
+			tNewGrid.nodes = tNewNodes;
+			return tNewGrid;
+		}
+	}
 }
