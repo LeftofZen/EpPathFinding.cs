@@ -70,16 +70,16 @@ namespace EpPathFindingDemo
 			MaximizeBox = false;
 
 			rectangles = new GridBox[width][];
-			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				rectangles[widthTrav] = new GridBox[height];
-				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				rectangles[x] = new GridBox[height];
+				for (var y = 0; y < height; y++)
 				{
-					rectangles[widthTrav][heightTrav] = widthTrav == (width / 3) && heightTrav == (height / 2)
-						? new GridBox(widthTrav * 20, (heightTrav * 20) + 50, BoxType.Start)
-						: widthTrav == 41 && heightTrav == (height / 2)
-							? new GridBox(widthTrav * 20, (heightTrav * 20) + 50, BoxType.End)
-							: new GridBox(widthTrav * 20, (heightTrav * 20) + 50, BoxType.Normal);
+					rectangles[x][y] = x == (width / 3) && y == (height / 2)
+						? new GridBox(x * 20, (y * 20) + 50, BoxType.Start)
+						: x == 41 && y == (height / 2)
+							? new GridBox(x * 20, (y * 20) + 50, BoxType.End)
+							: new GridBox(x * 20, (y * 20) + 50, BoxType.Normal);
 				}
 			}
 			_ = cbbJumpType.Items.Add("Always");
@@ -105,11 +105,11 @@ namespace EpPathFindingDemo
 			paper = e.Graphics;
 			//Draw
 
-			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				for (var y = 0; y < height; y++)
 				{
-					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Normal);
+					rectangles[x][y].DrawBox(paper, BoxType.Normal);
 				}
 			}
 
@@ -118,13 +118,13 @@ namespace EpPathFindingDemo
 				resultBox[resultTrav].DrawBox(paper);
 			}
 
-			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				for (var y = 0; y < height; y++)
 				{
-					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Start);
-					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.End);
-					rectangles[widthTrav][heightTrav].DrawBox(paper, BoxType.Wall);
+					rectangles[x][y].DrawBox(paper, BoxType.Start);
+					rectangles[x][y].DrawBox(paper, BoxType.End);
+					rectangles[x][y].DrawBox(paper, BoxType.Wall);
 				}
 			}
 
@@ -148,19 +148,19 @@ namespace EpPathFindingDemo
 			{
 				if (lastBoxSelect == null)
 				{
-					for (var widthTrav = 0; widthTrav < width; widthTrav++)
+					for (var x = 0; x < width; x++)
 					{
-						for (var heightTrav = 0; heightTrav < height; heightTrav++)
+						for (var y = 0; y < height; y++)
 						{
-							if (rectangles[widthTrav][heightTrav].BoxRect.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
+							if (rectangles[x][y].BoxRect.Contains(e.Location))
 							{
-								lastBoxType = rectangles[widthTrav][heightTrav].BoxType;
-								lastBoxSelect = rectangles[widthTrav][heightTrav];
+								lastBoxType = rectangles[x][y].BoxType;
+								lastBoxSelect = rectangles[x][y];
 								switch (lastBoxType)
 								{
 									case BoxType.Normal:
 									case BoxType.Wall:
-										rectangles[widthTrav][heightTrav].SwitchBox();
+										rectangles[x][y].SwitchBox();
 										Invalidate();
 										break;
 									case BoxType.Start:
@@ -176,13 +176,13 @@ namespace EpPathFindingDemo
 				}
 				else
 				{
-					for (var widthTrav = 0; widthTrav < width; widthTrav++)
+					for (var x = 0; x < width; x++)
 					{
-						for (var heightTrav = 0; heightTrav < height; heightTrav++)
+						for (var y = 0; y < height; y++)
 						{
-							if (rectangles[widthTrav][heightTrav].BoxRect.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
+							if (rectangles[x][y].BoxRect.Contains(e.Location))
 							{
-								if (rectangles[widthTrav][heightTrav] == lastBoxSelect)
+								if (rectangles[x][y] == lastBoxSelect)
 								{
 									return;
 								}
@@ -192,22 +192,22 @@ namespace EpPathFindingDemo
 									{
 										case BoxType.Normal:
 										case BoxType.Wall:
-											if (rectangles[widthTrav][heightTrav].BoxType == lastBoxType)
+											if (rectangles[x][y].BoxType == lastBoxType)
 											{
-												rectangles[widthTrav][heightTrav].SwitchBox();
-												lastBoxSelect = rectangles[widthTrav][heightTrav];
+												rectangles[x][y].SwitchBox();
+												lastBoxSelect = rectangles[x][y];
 												Invalidate();
 											}
 											break;
 										case BoxType.Start:
 											lastBoxSelect.SetNormalBox();
-											lastBoxSelect = rectangles[widthTrav][heightTrav];
+											lastBoxSelect = rectangles[x][y];
 											lastBoxSelect.SetStartBox();
 											Invalidate();
 											break;
 										case BoxType.End:
 											lastBoxSelect.SetNormalBox();
-											lastBoxSelect = rectangles[widthTrav][heightTrav];
+											lastBoxSelect = rectangles[x][y];
 											lastBoxSelect.SetEndBox();
 											Invalidate();
 											break;
@@ -224,19 +224,19 @@ namespace EpPathFindingDemo
 		{
 			if (e.Button == MouseButtons.Left)
 			{
-				for (var widthTrav = 0; widthTrav < width; widthTrav++)
+				for (var x = 0; x < width; x++)
 				{
-					for (var heightTrav = 0; heightTrav < height; heightTrav++)
+					for (var y = 0; y < height; y++)
 					{
-						if (rectangles[widthTrav][heightTrav].BoxRect.IntersectsWith(new Rectangle(e.Location, new Size(1, 1))))
+						if (rectangles[x][y].BoxRect.Contains(e.Location))
 						{
-							lastBoxType = rectangles[widthTrav][heightTrav].BoxType;
-							lastBoxSelect = rectangles[widthTrav][heightTrav];
+							lastBoxType = rectangles[x][y].BoxType;
+							lastBoxSelect = rectangles[x][y];
 							switch (lastBoxType)
 							{
 								case BoxType.Normal:
 								case BoxType.Wall:
-									rectangles[widthTrav][heightTrav].SwitchBox();
+									rectangles[x][y].SwitchBox();
 									Invalidate();
 									break;
 								case BoxType.Start:
@@ -265,24 +265,24 @@ namespace EpPathFindingDemo
 
 			var startPos = new GridPos();
 			var endPos = new GridPos();
-			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				for (var y = 0; y < height; y++)
 				{
-					_ = rectangles[widthTrav][heightTrav].BoxType != BoxType.Wall
-						? searchGrid.SetWalkableAt(new GridPos(widthTrav, heightTrav), true)
-						: searchGrid.SetWalkableAt(new GridPos(widthTrav, heightTrav), false);
+					_ = rectangles[x][y].BoxType != BoxType.Wall
+						? searchGrid.SetWalkableAt(x, y, true)
+						: searchGrid.SetWalkableAt(x, y, false);
 
-					if (rectangles[widthTrav][heightTrav].BoxType == BoxType.Start)
+					if (rectangles[x][y].BoxType == BoxType.Start)
 					{
-						startPos.X = widthTrav;
-						startPos.Y = heightTrav;
+						startPos.X = x;
+						startPos.Y = y;
 					}
 
-					if (rectangles[widthTrav][heightTrav].BoxType == BoxType.End)
+					if (rectangles[x][y].BoxType == BoxType.End)
 					{
-						endPos.X = widthTrav;
-						endPos.Y = heightTrav;
+						endPos.X = x;
+						endPos.Y = y;
 					}
 				}
 			}
@@ -297,23 +297,23 @@ namespace EpPathFindingDemo
 				resultLine.Add(new GridLine(rectangles[resultList[resultTrav].X][resultList[resultTrav].Y], rectangles[resultList[resultTrav + 1].X][resultList[resultTrav + 1].Y]));
 			}
 
-			for (var widthTrav = 0; widthTrav < jumpParam.SearchGrid.Width; widthTrav++)
+			for (var x = 0; x < jumpParam.SearchGrid.Width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < jumpParam.SearchGrid.Height; heightTrav++)
+				for (var y = 0; y < jumpParam.SearchGrid.Height; y++)
 				{
-					if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav) == null)
+					if (jumpParam.SearchGrid.GetNodeAt(x, y) == null)
 					{
 						continue;
 					}
 
-					if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav).IsOpened)
+					if (jumpParam.SearchGrid.GetNodeAt(x, y).IsOpened)
 					{
-						var resultBox = new ResultBox(widthTrav * 20, (heightTrav * 20) + 50, ResultBoxType.Opened);
+						var resultBox = new ResultBox(x * 20, (y * 20) + 50, ResultBoxType.Opened);
 						this.resultBox.Add(resultBox);
 					}
-					if (jumpParam.SearchGrid.GetNodeAt(widthTrav, heightTrav).IsClosed)
+					if (jumpParam.SearchGrid.GetNodeAt(x, y).IsClosed)
 					{
-						var resultBox = new ResultBox(widthTrav * 20, (heightTrav * 20) + 50, ResultBoxType.Closed);
+						var resultBox = new ResultBox(x * 20, (y * 20) + 50, ResultBoxType.Closed);
 						this.resultBox.Add(resultBox);
 					}
 				}
@@ -352,18 +352,18 @@ namespace EpPathFindingDemo
 			}
 
 			resultBox.Clear();
-			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				for (var y = 0; y < height; y++)
 				{
-					switch (rectangles[widthTrav][heightTrav].BoxType)
+					switch (rectangles[x][y].BoxType)
 					{
 						case BoxType.Normal:
 						case BoxType.Start:
 						case BoxType.End:
 							break;
 						case BoxType.Wall:
-							rectangles[widthTrav][heightTrav].SetNormalBox();
+							rectangles[x][y].SetNormalBox();
 							break;
 					}
 				}

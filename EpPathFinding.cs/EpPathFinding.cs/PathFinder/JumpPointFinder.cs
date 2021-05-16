@@ -186,28 +186,6 @@ namespace EpPathFinding.cs
 			}
 		}
 
-		private class JumpSnapshot
-		{
-			public int X;
-			public int Y;
-			public int IPx;
-			public int IPy;
-			public int TDx;
-			public int TDy;
-			public int Stage;
-
-			public JumpSnapshot()
-			{
-				X = 0;
-				Y = 0;
-				IPx = 0;
-				IPy = 0;
-				TDx = 0;
-				TDy = 0;
-				Stage = 0;
-			}
-		}
-
 		private static GridPos JumpLoop(JumpPointParam jpParam, int x, int y, int px, int py)
 		{
 			var stack = new Stack<JumpSnapshot>();
@@ -216,8 +194,8 @@ namespace EpPathFinding.cs
 			{
 				X = x,
 				Y = y,
-				IPx = px,
-				IPy = py,
+				Px = px,
+				Py = py,
 				Stage = 0
 			};
 
@@ -242,16 +220,16 @@ namespace EpPathFinding.cs
 							continue;
 						}
 
-						currentSnapshot.TDx = currentSnapshot.X - currentSnapshot.IPx;
-						currentSnapshot.TDy = currentSnapshot.Y - currentSnapshot.IPy;
+						currentSnapshot.Dx = currentSnapshot.X - currentSnapshot.Px;
+						currentSnapshot.Dy = currentSnapshot.Y - currentSnapshot.Py;
 						if (jpParam.DiagonalMovement == DiagonalMovement.Always || jpParam.DiagonalMovement == DiagonalMovement.IfAtLeastOneWalkable)
 						{
 							// check for forced neighbors
 							// along the diagonal
-							if (currentSnapshot.TDx != 0 && currentSnapshot.TDy != 0)
+							if (currentSnapshot.Dx != 0 && currentSnapshot.Dy != 0)
 							{
-								if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.TDx, currentSnapshot.Y + currentSnapshot.TDy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.TDx, currentSnapshot.Y)) ||
-									(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y - currentSnapshot.TDy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y - currentSnapshot.TDy)))
+								if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.Dx, currentSnapshot.Y + currentSnapshot.Dy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.Dx, currentSnapshot.Y)) ||
+									(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y - currentSnapshot.Dy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y - currentSnapshot.Dy)))
 								{
 									retVal = new GridPos(currentSnapshot.X, currentSnapshot.Y);
 									continue;
@@ -260,11 +238,11 @@ namespace EpPathFinding.cs
 							// horizontally/vertically
 							else
 							{
-								if (currentSnapshot.TDx != 0)
+								if (currentSnapshot.Dx != 0)
 								{
 									// moving along x
-									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y + 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + 1)) ||
-										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y - 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y - 1)))
+									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y + 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + 1)) ||
+										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y - 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y - 1)))
 									{
 										retVal = new GridPos(currentSnapshot.X, currentSnapshot.Y);
 										continue;
@@ -272,8 +250,8 @@ namespace EpPathFinding.cs
 								}
 								else
 								{
-									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y + currentSnapshot.TDy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y)) ||
-										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y + currentSnapshot.TDy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y)))
+									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y + currentSnapshot.Dy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y)) ||
+										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y + currentSnapshot.Dy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y)))
 									{
 										retVal = new GridPos(currentSnapshot.X, currentSnapshot.Y);
 										continue;
@@ -281,17 +259,17 @@ namespace EpPathFinding.cs
 								}
 							}
 							// when moving diagonally, must check for vertical/horizontal jump points
-							if (currentSnapshot.TDx != 0 && currentSnapshot.TDy != 0)
+							if (currentSnapshot.Dx != 0 && currentSnapshot.Dy != 0)
 							{
 								currentSnapshot.Stage = 1;
 								stack.Push(currentSnapshot);
 
 								newSnapshot = new JumpSnapshot
 								{
-									X = currentSnapshot.X + currentSnapshot.TDx,
+									X = currentSnapshot.X + currentSnapshot.Dx,
 									Y = currentSnapshot.Y,
-									IPx = currentSnapshot.X,
-									IPy = currentSnapshot.Y,
+									Px = currentSnapshot.X,
+									Py = currentSnapshot.Y,
 									Stage = 0
 								};
 								stack.Push(newSnapshot);
@@ -303,14 +281,14 @@ namespace EpPathFinding.cs
 
 							// moving diagonally, must make sure one of the vertical/horizontal
 							// neighbors is open to allow the path
-							if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y) || jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy))
+							if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y) || jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy))
 							{
 								newSnapshot = new JumpSnapshot
 								{
-									X = currentSnapshot.X + currentSnapshot.TDx,
-									Y = currentSnapshot.Y + currentSnapshot.TDy,
-									IPx = currentSnapshot.X,
-									IPy = currentSnapshot.Y,
+									X = currentSnapshot.X + currentSnapshot.Dx,
+									Y = currentSnapshot.Y + currentSnapshot.Dy,
+									Px = currentSnapshot.X,
+									Py = currentSnapshot.Y,
 									Stage = 0
 								};
 								stack.Push(newSnapshot);
@@ -320,10 +298,10 @@ namespace EpPathFinding.cs
 							{
 								newSnapshot = new JumpSnapshot
 								{
-									X = currentSnapshot.X + currentSnapshot.TDx,
-									Y = currentSnapshot.Y + currentSnapshot.TDy,
-									IPx = currentSnapshot.X,
-									IPy = currentSnapshot.Y,
+									X = currentSnapshot.X + currentSnapshot.Dx,
+									Y = currentSnapshot.Y + currentSnapshot.Dy,
+									Px = currentSnapshot.X,
+									Py = currentSnapshot.Y,
 									Stage = 0
 								};
 								stack.Push(newSnapshot);
@@ -334,10 +312,10 @@ namespace EpPathFinding.cs
 						{
 							// check for forced neighbors
 							// along the diagonal
-							if (currentSnapshot.TDx != 0 && currentSnapshot.TDy != 0)
+							if (currentSnapshot.Dx != 0 && currentSnapshot.Dy != 0)
 							{
-								if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y + currentSnapshot.TDy) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y)) ||
-									(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y + currentSnapshot.TDy) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy)))
+								if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y + currentSnapshot.Dy) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y)) ||
+									(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y + currentSnapshot.Dy) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy)))
 								{
 									retVal = new GridPos(currentSnapshot.X, currentSnapshot.Y);
 									continue;
@@ -346,11 +324,11 @@ namespace EpPathFinding.cs
 							// horizontally/vertically
 							else
 							{
-								if (currentSnapshot.TDx != 0)
+								if (currentSnapshot.Dx != 0)
 								{
 									// moving along x
-									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.TDx, currentSnapshot.Y + 1)) ||
-										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y - 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.TDx, currentSnapshot.Y - 1)))
+									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.Dx, currentSnapshot.Y + 1)) ||
+										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y - 1) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - currentSnapshot.Dx, currentSnapshot.Y - 1)))
 									{
 										retVal = new GridPos(currentSnapshot.X, currentSnapshot.Y);
 										continue;
@@ -358,8 +336,8 @@ namespace EpPathFinding.cs
 								}
 								else
 								{
-									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y - currentSnapshot.TDy)) ||
-										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y - currentSnapshot.TDy)))
+									if ((jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + 1, currentSnapshot.Y - currentSnapshot.Dy)) ||
+										(jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y) && !jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X - 1, currentSnapshot.Y - currentSnapshot.Dy)))
 									{
 										retVal = new GridPos(currentSnapshot.X, currentSnapshot.Y);
 										continue;
@@ -368,17 +346,17 @@ namespace EpPathFinding.cs
 							}
 
 							// when moving diagonally, must check for vertical/horizontal jump points
-							if (currentSnapshot.TDx != 0 && currentSnapshot.TDy != 0)
+							if (currentSnapshot.Dx != 0 && currentSnapshot.Dy != 0)
 							{
 								currentSnapshot.Stage = 3;
 								stack.Push(currentSnapshot);
 
 								newSnapshot = new JumpSnapshot
 								{
-									X = currentSnapshot.X + currentSnapshot.TDx,
+									X = currentSnapshot.X + currentSnapshot.Dx,
 									Y = currentSnapshot.Y,
-									IPx = currentSnapshot.X,
-									IPy = currentSnapshot.Y,
+									Px = currentSnapshot.X,
+									Py = currentSnapshot.Y,
 									Stage = 0
 								};
 								stack.Push(newSnapshot);
@@ -387,14 +365,14 @@ namespace EpPathFinding.cs
 
 							// moving diagonally, must make sure both of the vertical/horizontal
 							// neighbors is open to allow the path
-							if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy))
+							if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy))
 							{
 								newSnapshot = new JumpSnapshot
 								{
-									X = currentSnapshot.X + currentSnapshot.TDx,
-									Y = currentSnapshot.Y + currentSnapshot.TDy,
-									IPx = currentSnapshot.X,
-									IPy = currentSnapshot.Y,
+									X = currentSnapshot.X + currentSnapshot.Dx,
+									Y = currentSnapshot.Y + currentSnapshot.Dy,
+									Px = currentSnapshot.X,
+									Py = currentSnapshot.Y,
 									Stage = 0
 								};
 								stack.Push(newSnapshot);
@@ -403,10 +381,10 @@ namespace EpPathFinding.cs
 						}
 						else // if(jpParam.DiagonalMovement == DiagonalMovement.Never)
 						{
-							if (currentSnapshot.TDx != 0)
+							if (currentSnapshot.Dx != 0)
 							{
 								// moving along x
-								if (!jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y))
+								if (!jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y))
 								{
 									retVal = new GridPos(x, y);
 									continue;
@@ -414,7 +392,7 @@ namespace EpPathFinding.cs
 							}
 							else
 							{
-								if (!jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy))
+								if (!jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy))
 								{
 									retVal = new GridPos(x, y);
 									continue;
@@ -422,7 +400,7 @@ namespace EpPathFinding.cs
 							}
 
 							//  must check for perpendicular jump points
-							if (currentSnapshot.TDx != 0)
+							if (currentSnapshot.Dx != 0)
 							{
 								currentSnapshot.Stage = 5;
 								stack.Push(currentSnapshot);
@@ -431,8 +409,8 @@ namespace EpPathFinding.cs
 								{
 									X = currentSnapshot.X,
 									Y = currentSnapshot.Y + 1,
-									IPx = currentSnapshot.X,
-									IPy = currentSnapshot.Y,
+									Px = currentSnapshot.X,
+									Py = currentSnapshot.Y,
 									Stage = 0
 								};
 								stack.Push(newSnapshot);
@@ -447,8 +425,8 @@ namespace EpPathFinding.cs
 								{
 									X = currentSnapshot.X + 1,
 									Y = currentSnapshot.Y,
-									IPx = currentSnapshot.X,
-									IPy = currentSnapshot.Y,
+									Px = currentSnapshot.X,
+									Py = currentSnapshot.Y,
 									Stage = 0
 								};
 								stack.Push(newSnapshot);
@@ -470,9 +448,9 @@ namespace EpPathFinding.cs
 						newSnapshot = new JumpSnapshot
 						{
 							X = currentSnapshot.X,
-							Y = currentSnapshot.Y + currentSnapshot.TDy,
-							IPx = currentSnapshot.X,
-							IPy = currentSnapshot.Y,
+							Y = currentSnapshot.Y + currentSnapshot.Dy,
+							Px = currentSnapshot.X,
+							Py = currentSnapshot.Y,
 							Stage = 0
 						};
 						stack.Push(newSnapshot);
@@ -486,14 +464,14 @@ namespace EpPathFinding.cs
 
 						// moving diagonally, must make sure one of the vertical/horizontal
 						// neighbors is open to allow the path
-						if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y) || jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy))
+						if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y) || jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy))
 						{
 							newSnapshot = new JumpSnapshot
 							{
-								X = currentSnapshot.X + currentSnapshot.TDx,
-								Y = currentSnapshot.Y + currentSnapshot.TDy,
-								IPx = currentSnapshot.X,
-								IPy = currentSnapshot.Y,
+								X = currentSnapshot.X + currentSnapshot.Dx,
+								Y = currentSnapshot.Y + currentSnapshot.Dy,
+								Px = currentSnapshot.X,
+								Py = currentSnapshot.Y,
 								Stage = 0
 							};
 							stack.Push(newSnapshot);
@@ -503,10 +481,10 @@ namespace EpPathFinding.cs
 						{
 							newSnapshot = new JumpSnapshot
 							{
-								X = currentSnapshot.X + currentSnapshot.TDx,
-								Y = currentSnapshot.Y + currentSnapshot.TDy,
-								IPx = currentSnapshot.X,
-								IPy = currentSnapshot.Y,
+								X = currentSnapshot.X + currentSnapshot.Dx,
+								Y = currentSnapshot.Y + currentSnapshot.Dy,
+								Px = currentSnapshot.X,
+								Py = currentSnapshot.Y,
 								Stage = 0
 							};
 							stack.Push(newSnapshot);
@@ -527,9 +505,9 @@ namespace EpPathFinding.cs
 						newSnapshot = new JumpSnapshot
 						{
 							X = currentSnapshot.X,
-							Y = currentSnapshot.Y + currentSnapshot.TDy,
-							IPx = currentSnapshot.X,
-							IPy = currentSnapshot.Y,
+							Y = currentSnapshot.Y + currentSnapshot.Dy,
+							Px = currentSnapshot.X,
+							Py = currentSnapshot.Y,
 							Stage = 0
 						};
 						stack.Push(newSnapshot);
@@ -543,14 +521,14 @@ namespace EpPathFinding.cs
 
 						// moving diagonally, must make sure both of the vertical/horizontal
 						// neighbors is open to allow the path
-						if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy))
+						if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy))
 						{
 							newSnapshot = new JumpSnapshot
 							{
-								X = currentSnapshot.X + currentSnapshot.TDx,
-								Y = currentSnapshot.Y + currentSnapshot.TDy,
-								IPx = currentSnapshot.X,
-								IPy = currentSnapshot.Y,
+								X = currentSnapshot.X + currentSnapshot.Dx,
+								Y = currentSnapshot.Y + currentSnapshot.Dy,
+								Px = currentSnapshot.X,
+								Py = currentSnapshot.Y,
 								Stage = 0
 							};
 							stack.Push(newSnapshot);
@@ -571,8 +549,8 @@ namespace EpPathFinding.cs
 						{
 							X = currentSnapshot.X,
 							Y = currentSnapshot.Y - 1,
-							IPx = currentSnapshot.X,
-							IPy = currentSnapshot.Y,
+							Px = currentSnapshot.X,
+							Py = currentSnapshot.Y,
 							Stage = 0
 						};
 						stack.Push(newSnapshot);
@@ -590,8 +568,8 @@ namespace EpPathFinding.cs
 						{
 							X = currentSnapshot.X - 1,
 							Y = currentSnapshot.Y,
-							IPx = currentSnapshot.X,
-							IPy = currentSnapshot.Y,
+							Px = currentSnapshot.X,
+							Py = currentSnapshot.Y,
 							Stage = 0
 						};
 						stack.Push(newSnapshot);
@@ -603,14 +581,14 @@ namespace EpPathFinding.cs
 							continue;
 						}
 						// keep going
-						if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.TDx, currentSnapshot.Y) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.TDy))
+						if (jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X + currentSnapshot.Dx, currentSnapshot.Y) && jpParam.SearchGrid.IsWalkableAt(currentSnapshot.X, currentSnapshot.Y + currentSnapshot.Dy))
 						{
 							newSnapshot = new JumpSnapshot
 							{
-								X = currentSnapshot.X + currentSnapshot.TDx,
-								Y = currentSnapshot.Y + currentSnapshot.TDy,
-								IPx = currentSnapshot.X,
-								IPy = currentSnapshot.Y,
+								X = currentSnapshot.X + currentSnapshot.Dx,
+								Y = currentSnapshot.Y + currentSnapshot.Dy,
+								Px = currentSnapshot.X,
+								Py = currentSnapshot.Y,
 								Stage = 0
 							};
 							stack.Push(newSnapshot);

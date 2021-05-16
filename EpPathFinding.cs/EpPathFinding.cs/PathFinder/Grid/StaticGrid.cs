@@ -44,7 +44,7 @@ namespace EpPathFinding.cs
 
 		public override int Height { get; protected set; }
 
-		private Node[][] nodes;
+		private Node[][] Nodes;
 
 		public StaticGrid(int width, int height, bool[][] matrix = null)
 		{
@@ -54,42 +54,42 @@ namespace EpPathFinding.cs
 			gridRect.Top = 0;
 			gridRect.Right = width - 1;
 			gridRect.Bottom = height - 1;
-			nodes = BuildNodes(width, height, matrix);
+			Nodes = BuildNodes(width, height, matrix);
 		}
 
 		public StaticGrid(StaticGrid b)
 			: base(b)
 		{
-			var tMatrix = new bool[b.Width][];
+			var matrix = new bool[b.Width][];
 
-			for (var widthTrav = 0; widthTrav < b.Width; widthTrav++)
+			for (var x = 0; x < b.Width; x++)
 			{
-				tMatrix[widthTrav] = new bool[b.Height];
-				for (var heightTrav = 0; heightTrav < b.Height; heightTrav++)
+				matrix[x] = new bool[b.Height];
+				for (var y = 0; y < b.Height; y++)
 				{
-					tMatrix[widthTrav][heightTrav] = b.IsWalkableAt(widthTrav, heightTrav);
+					matrix[x][y] = b.IsWalkableAt(x, y);
 				}
 			}
 
-			nodes = BuildNodes(b.Width, b.Height, tMatrix);
+			Nodes = BuildNodes(b.Width, b.Height, matrix);
 		}
 
 		private Node[][] BuildNodes(int width, int height, bool[][] matrix)
 		{
-			var tNodes = new Node[width][];
+			var nodes = new Node[width][];
 
-			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				tNodes[widthTrav] = new Node[height];
-				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				nodes[x] = new Node[height];
+				for (var y = 0; y < height; y++)
 				{
-					tNodes[widthTrav][heightTrav] = new Node(widthTrav, heightTrav);
+					nodes[x][y] = new Node(x, y);
 				}
 			}
 
 			if (matrix == null)
 			{
-				return tNodes;
+				return nodes;
 			}
 
 			if (matrix.Length != width || matrix[0].Length != height)
@@ -97,29 +97,29 @@ namespace EpPathFinding.cs
 				throw new System.Exception("Matrix size does not fit");
 			}
 
-			for (var widthTrav = 0; widthTrav < width; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < height; heightTrav++)
+				for (var y = 0; y < height; y++)
 				{
-					tNodes[widthTrav][heightTrav].Walkable = matrix[widthTrav][heightTrav];
+					nodes[x][y].Walkable = matrix[x][y];
 				}
 			}
 
-			return tNodes;
+			return nodes;
 		}
 
 		public override Node GetNodeAt(int x, int y)
-			=> nodes[x][y];
+			=> Nodes[x][y];
 
 		public override bool IsWalkableAt(int x, int y)
-			=> IsInside(x, y) && nodes[x][y].Walkable;
+			=> IsInside(x, y) && Nodes[x][y].Walkable;
 
 		protected bool IsInside(int x, int y)
 			=> x >= 0 && x < Width && y >= 0 && y < Height;
 
 		public override bool SetWalkableAt(int x, int y, bool walkable)
 		{
-			nodes[x][y].Walkable = walkable;
+			Nodes[x][y].Walkable = walkable;
 			return true;
 		}
 
@@ -140,11 +140,11 @@ namespace EpPathFinding.cs
 
 		public void Reset(bool[][] matrix)
 		{
-			for (var widthTrav = 0; widthTrav < Width; widthTrav++)
+			for (var x = 0; x < Width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < Height; heightTrav++)
+				for (var y = 0; y < Height; y++)
 				{
-					nodes[widthTrav][heightTrav].Reset();
+					Nodes[x][y].Reset();
 				}
 			}
 
@@ -158,34 +158,34 @@ namespace EpPathFinding.cs
 				throw new System.Exception("Matrix size does not fit");
 			}
 
-			for (var widthTrav = 0; widthTrav < Width; widthTrav++)
+			for (var x = 0; x < Width; x++)
 			{
-				for (var heightTrav = 0; heightTrav < Height; heightTrav++)
+				for (var y = 0; y < Height; y++)
 				{
-					nodes[widthTrav][heightTrav].Walkable = matrix[widthTrav][heightTrav];
+					Nodes[x][y].Walkable = matrix[x][y];
 				}
 			}
 		}
 
 		public override BaseGrid Clone()
 		{
-			var tWidth = Width;
-			var tHeight = Height;
-			var tNodes = nodes;
-			var tNewGrid = new StaticGrid(tWidth, tHeight, null);
-			var tNewNodes = new Node[tWidth][];
+			var width = Width;
+			var height = Height;
+			var nodes = Nodes;
+			var newGrid = new StaticGrid(width, height);
+			var newNodes = new Node[width][];
 
-			for (var widthTrav = 0; widthTrav < tWidth; widthTrav++)
+			for (var x = 0; x < width; x++)
 			{
-				tNewNodes[widthTrav] = new Node[tHeight];
-				for (var heightTrav = 0; heightTrav < tHeight; heightTrav++)
+				newNodes[x] = new Node[height];
+				for (var y = 0; y < height; y++)
 				{
-					tNewNodes[widthTrav][heightTrav] = new Node(widthTrav, heightTrav, tNodes[widthTrav][heightTrav].Walkable);
+					newNodes[x][y] = new Node(x, y, nodes[x][y].Walkable);
 				}
 			}
 
-			tNewGrid.nodes = tNewNodes;
-			return tNewGrid;
+			newGrid.Nodes = newNodes;
+			return newGrid;
 		}
 	}
 }

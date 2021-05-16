@@ -86,16 +86,9 @@ namespace EpPathFinding.cs
 		internal override void ResetInternal(GridPos startPos, GridPos endPos, BaseGrid searchGrid = null)
 			=> OpenList = new IntervalHeap<Node>();//openList.Clear();
 
-		public EndNodeUnWalkableTreatment CurEndNodeUnWalkableTreatment
-		{
-			get;
-			set;
-		}
-		public IterationType CurIterationType
-		{
-			get;
-			set;
-		}
+		public EndNodeUnWalkableTreatment CurEndNodeUnWalkableTreatment { get; set; }
+
+		public IterationType CurIterationType { get; set; }
 
 		public IntervalHeap<Node> OpenList;
 	}

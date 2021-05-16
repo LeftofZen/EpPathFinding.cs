@@ -81,9 +81,10 @@ namespace EpPathFinding.cs
 			Parent = b.Parent;
 		}
 
-		public void Reset(bool walkable = false)
+		public void Reset(bool? isWalkable = null)
 		{
-			Walkable = walkable;
+			if (isWalkable.HasValue)
+				Walkable = isWalkable.Value;
 			HeuristicStartToEndLen = 0;
 			StartToCurNodeLen = 0;
 			// this must be initialized as null to verify that its value never initialized
