@@ -18,10 +18,10 @@ namespace EpPathFindingTest
 		[Test]
 		public void GetDiagonalMovement()
 		{
-			Assert.AreEqual(DiagonalMovement.Always, Util.GetDiagonalMovement(true, true));
-			Assert.AreEqual(DiagonalMovement.IfAtLeastOneWalkable, Util.GetDiagonalMovement(true, false));
-			Assert.AreEqual(DiagonalMovement.OnlyWhenNoObstacles, Util.GetDiagonalMovement(false, true));
-			Assert.AreEqual(DiagonalMovement.Never, Util.GetDiagonalMovement(false, false));
+			Assert.That(Util.GetDiagonalMovement(true, true), Is.EqualTo(DiagonalMovement.Always));
+			Assert.That(Util.GetDiagonalMovement(true, false), Is.EqualTo(DiagonalMovement.IfAtLeastOneWalkable));
+			Assert.That(Util.GetDiagonalMovement(false, true), Is.EqualTo(DiagonalMovement.OnlyWhenNoObstacles));
+			Assert.That(Util.GetDiagonalMovement(false, false), Is.EqualTo(DiagonalMovement.Never));
 		}
 	}
 }

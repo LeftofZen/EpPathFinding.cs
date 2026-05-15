@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="EpPathFinding/EpPathFinding.csproj" />
+  <Project Path="EpPathFindingDemo/EpPathFindingDemo.csproj" />
+  <Project Path="EpPathFindingTest/EpPathFindingTest.csproj" />
+</Solution>

@@ -17,8 +17,8 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(0, pos.X);
-				Assert.AreEqual(0, pos.Y);
+				Assert.That(pos.X, Is.EqualTo(0));
+				Assert.That(pos.Y, Is.EqualTo(0));
 			});
 		}
 
@@ -29,8 +29,8 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(1, pos.X);
-				Assert.AreEqual(2, pos.Y);
+				Assert.That(pos.X, Is.EqualTo(1));
+				Assert.That(pos.Y, Is.EqualTo(2));
 			});
 		}
 
@@ -41,8 +41,8 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(3, pos.X, 3);
-				Assert.AreEqual(3, pos.Y, 4);
+				Assert.That(pos.X, Is.EqualTo(3));
+				Assert.That(pos.Y, Is.EqualTo(4));
 			});
 		}
 
@@ -54,8 +54,8 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(7, pos.X);
-				Assert.AreEqual(8, pos.Y);
+				Assert.That(pos.X, Is.EqualTo(7));
+				Assert.That(pos.Y, Is.EqualTo(8));
 			});
 		}
 
@@ -67,11 +67,11 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(7, pos.X);
-				Assert.AreEqual(8, pos.Y);
-				Assert.AreEqual(7, ret.X);
-				Assert.AreEqual(8, ret.Y);
-				Assert.That(ReferenceEquals(pos, ret));
+				Assert.That(pos.X, Is.EqualTo(7));
+				Assert.That(pos.Y, Is.EqualTo(8));
+				Assert.That(ret.X, Is.EqualTo(7));
+				Assert.That(ret.Y, Is.EqualTo(8));
+				Assert.That(ret, Is.SameAs(pos));
 			});
 		}
 
@@ -83,11 +83,11 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(5, pos.X);
-				Assert.AreEqual(6, pos.Y);
-				Assert.AreEqual(12, trn.X);
-				Assert.AreEqual(14, trn.Y);
-				Assert.That(!ReferenceEquals(pos, trn));
+				Assert.That(pos.X, Is.EqualTo(5));
+				Assert.That(pos.Y, Is.EqualTo(6));
+				Assert.That(trn.X, Is.EqualTo(12));
+				Assert.That(trn.Y, Is.EqualTo(14));
+				Assert.That(trn, Is.Not.SameAs(pos));
 			});
 		}
 
@@ -100,12 +100,12 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(pos.Equals(pos));
-				Assert.That(pos.Equals(other));
-				Assert.That(!pos.Equals(third));
+				Assert.That(pos.Equals(pos), Is.True);
+				Assert.That(pos.Equals(other), Is.True);
+				Assert.That(pos.Equals(third), Is.False);
 
-				Assert.That(pos.Equals((object)other));
-				Assert.That(!pos.Equals(null));
+				Assert.That(pos.Equals((object)other), Is.True);
+				Assert.That(pos.Equals(null), Is.False);
 			});
 		}
 
@@ -119,13 +119,13 @@ namespace EpPathFindingTest
 			Assert.Multiple(() =>
 			{
 #pragma warning disable CS1718 // Comparison made to same variable
-				Assert.That(pos == pos);
+				Assert.That(pos == pos, Is.True);
 #pragma warning restore CS1718 // Comparison made to same variable
-				Assert.That(pos == other);
-				Assert.That(pos != third);
+				Assert.That(pos == other, Is.True);
+				Assert.That(pos != third, Is.True);
 
-				Assert.That(pos != (object)other); // operator== with object not implemented yet
-				Assert.That(pos != null);
+				Assert.That(pos != (object)other, Is.True); // operator== with object not implemented yet
+				Assert.That(pos != null, Is.True);
 			});
 		}
 
@@ -133,7 +133,7 @@ namespace EpPathFindingTest
 		public void _ToString()
 		{
 			var pos = new GridPos(5, 6);
-			Assert.AreNotEqual(pos.ToString(), "(X=5, Y=6)");
+			Assert.That(pos.ToString(), Is.EqualTo("(X=5, Y=6)"));
 		}
 	}
 }

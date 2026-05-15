@@ -22,10 +22,10 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(0, rect.Left);
-				Assert.AreEqual(0, rect.Top);
-				Assert.AreEqual(0, rect.Right);
-				Assert.AreEqual(0, rect.Bottom);
+				Assert.That(rect.Left, Is.EqualTo(0));
+				Assert.That(rect.Top, Is.EqualTo(0));
+				Assert.That(rect.Right, Is.EqualTo(0));
+				Assert.That(rect.Bottom, Is.EqualTo(0));
 			});
 		}
 
@@ -36,10 +36,10 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(1, rect.Left);
-				Assert.AreEqual(2, rect.Top);
-				Assert.AreEqual(3, rect.Right);
-				Assert.AreEqual(4, rect.Bottom);
+				Assert.That(rect.Left, Is.EqualTo(1));
+				Assert.That(rect.Top, Is.EqualTo(2));
+				Assert.That(rect.Right, Is.EqualTo(3));
+				Assert.That(rect.Bottom, Is.EqualTo(4));
 			});
 		}
 
@@ -50,10 +50,10 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(1, rect.Left);
-				Assert.AreEqual(2, rect.Top);
-				Assert.AreEqual(3, rect.Right);
-				Assert.AreEqual(4, rect.Bottom);
+				Assert.That(rect.Left, Is.EqualTo(1));
+				Assert.That(rect.Top, Is.EqualTo(2));
+				Assert.That(rect.Right, Is.EqualTo(3));
+				Assert.That(rect.Bottom, Is.EqualTo(4));
 			});
 		}
 
@@ -65,10 +65,10 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(5, rect.Left);
-				Assert.AreEqual(6, rect.Top);
-				Assert.AreEqual(7, rect.Right);
-				Assert.AreEqual(8, rect.Bottom);
+				Assert.That(rect.Left, Is.EqualTo(5));
+				Assert.That(rect.Top, Is.EqualTo(6));
+				Assert.That(rect.Right, Is.EqualTo(7));
+				Assert.That(rect.Bottom, Is.EqualTo(8));
 			});
 		}
 
@@ -81,12 +81,12 @@ namespace EpPathFindingTest
 
 			Assert.Multiple(() =>
 			{
-				Assert.That(rect.Equals(rect));
-				Assert.That(rect.Equals(other));
-				Assert.That(!rect.Equals(third));
+				Assert.That(rect.Equals(rect), Is.True);
+				Assert.That(rect.Equals(other), Is.True);
+				Assert.That(rect.Equals(third), Is.False);
 
-				Assert.That(rect.Equals((object)other));
-				Assert.That(!rect.Equals(null));
+				Assert.That(rect.Equals((object)other), Is.True);
+				Assert.That(rect.Equals(null), Is.False);
 			});
 		}
 
@@ -101,13 +101,13 @@ namespace EpPathFindingTest
 			{
 
 #pragma warning disable CS1718 // Comparison made to same variable
-				Assert.That(rect == rect);
+				Assert.That(rect == rect, Is.True);
 #pragma warning restore CS1718 // Comparison made to same variable
-				Assert.That(rect == other);
-				Assert.That(rect != third);
+				Assert.That(rect == other, Is.True);
+				Assert.That(rect != third, Is.True);
 
-				Assert.That(rect != (object)other); // operator== with object not implemented yet
-				Assert.That(rect != null);
+				Assert.That(rect != (object)other, Is.True); // operator== with object not implemented yet
+				Assert.That(rect != null, Is.True);
 
 			});
 		}
@@ -116,7 +116,7 @@ namespace EpPathFindingTest
 		public void _ToString()
 		{
 			var pos = new GridRect(5, 6, 7, 8);
-			Assert.AreNotEqual(pos.ToString(), "(Left=5, Top=6, Bottom=7, Right=8)");
+			Assert.That(pos.ToString(), Is.EqualTo("(Top=6, Left=5, Bottom=8 Right=7)"));
 		}
 	}
 }

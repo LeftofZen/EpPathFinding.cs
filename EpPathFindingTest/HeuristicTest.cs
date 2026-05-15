@@ -21,11 +21,11 @@ namespace EpPathFindingTest
 		{
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(4, Heuristic.Manhattan(1, 3));
-				Assert.AreEqual(4, Heuristic.Manhattan(0, 4));
-				Assert.AreEqual(4, Heuristic.Manhattan(2, 2));
-				Assert.AreEqual(16, Heuristic.Manhattan(-7, 9));
-				Assert.AreEqual(0, Heuristic.Manhattan(0, 0));
+				Assert.That(Heuristic.Manhattan(1, 3), Is.EqualTo(4));
+				Assert.That(Heuristic.Manhattan(0, 4), Is.EqualTo(4));
+				Assert.That(Heuristic.Manhattan(2, 2), Is.EqualTo(4));
+				Assert.That(Heuristic.Manhattan(-7, 9), Is.EqualTo(16));
+				Assert.That(Heuristic.Manhattan(0, 0), Is.EqualTo(0));
 			});
 		}
 
@@ -34,11 +34,11 @@ namespace EpPathFindingTest
 		{
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(3.1622777f, Heuristic.Euclidean(1, 3));
-				Assert.AreEqual(4, Heuristic.Euclidean(0, 4));
-				Assert.AreEqual(2.82842708f, Heuristic.Euclidean(2, 2));
-				Assert.AreEqual(11.4017544f, Heuristic.Euclidean(-7, 9));
-				Assert.AreEqual(0, Heuristic.Euclidean(0, 0));
+				Assert.That(Heuristic.Euclidean(1, 3), Is.EqualTo(3.1622777f).Within(0.000001f));
+				Assert.That(Heuristic.Euclidean(0, 4), Is.EqualTo(4f).Within(0.000001f));
+				Assert.That(Heuristic.Euclidean(2, 2), Is.EqualTo(2.82842708f).Within(0.000001f));
+				Assert.That(Heuristic.Euclidean(-7, 9), Is.EqualTo(11.4017544f).Within(0.000001f));
+				Assert.That(Heuristic.Euclidean(0, 0), Is.EqualTo(0f).Within(0.000001f));
 			});
 		}
 
@@ -47,11 +47,11 @@ namespace EpPathFindingTest
 		{
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(10, Heuristic.EuclideanSquared(1, 3));
-				Assert.AreEqual(16, Heuristic.EuclideanSquared(0, 4));
-				Assert.AreEqual(8, Heuristic.EuclideanSquared(2, 2));
-				Assert.AreEqual(130, Heuristic.EuclideanSquared(-7, 9));
-				Assert.AreEqual(0, Heuristic.EuclideanSquared(0, 0));
+				Assert.That(Heuristic.EuclideanSquared(1, 3), Is.EqualTo(10));
+				Assert.That(Heuristic.EuclideanSquared(0, 4), Is.EqualTo(16));
+				Assert.That(Heuristic.EuclideanSquared(2, 2), Is.EqualTo(8));
+				Assert.That(Heuristic.EuclideanSquared(-7, 9), Is.EqualTo(130));
+				Assert.That(Heuristic.EuclideanSquared(0, 0), Is.EqualTo(0));
 			});
 		}
 
@@ -60,12 +60,12 @@ namespace EpPathFindingTest
 		{
 			Assert.Multiple(() =>
 			{
-				Assert.AreEqual(3, Heuristic.Chebyshev(1, 3));
-				Assert.AreEqual(4, Heuristic.Chebyshev(0, 4));
-				Assert.AreEqual(2, Heuristic.Chebyshev(2, 2));
-				Assert.AreEqual(9, Heuristic.Chebyshev(-7, 9));
-				Assert.AreEqual(9, Heuristic.Chebyshev(-9, 7));
-				Assert.AreEqual(0, Heuristic.Chebyshev(0, 0));
+				Assert.That(Heuristic.Chebyshev(1, 3), Is.EqualTo(3));
+				Assert.That(Heuristic.Chebyshev(0, 4), Is.EqualTo(4));
+				Assert.That(Heuristic.Chebyshev(2, 2), Is.EqualTo(2));
+				Assert.That(Heuristic.Chebyshev(-7, 9), Is.EqualTo(9));
+				Assert.That(Heuristic.Chebyshev(-9, 7), Is.EqualTo(9));
+				Assert.That(Heuristic.Chebyshev(0, 0), Is.EqualTo(0));
 			});
 		}
 	}
